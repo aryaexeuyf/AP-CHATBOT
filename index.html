@@ -13,9 +13,22 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            --primary-color: #4a6bff;
+            --secondary-color: #8b5cf6;
+            --bg-dark: #0a0e27;
+            --bg-medium: #1a1f3a;
+            --bg-light: rgba(26, 31, 58, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent: #4ade80;
+            --error: #ff4757;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
-            color: #fff;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 50%, var(--bg-dark) 100%);
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
             position: relative;
@@ -132,14 +145,14 @@
 
         /* Header */
         header {
-            background: rgba(26, 31, 58, 0.8);
+            background: var(--bg-light);
             backdrop-filter: blur(10px);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
@@ -150,7 +163,7 @@
 
         .logo i {
             font-size: 24px;
-            color: #4a6bff;
+            color: var(--primary-color);
             animation: pulse 2s infinite;
         }
 
@@ -171,7 +184,7 @@
 
         .logo h1 {
             font-size: 24px;
-            background: linear-gradient(90deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -185,7 +198,7 @@
         .btn {
             background: rgba(74, 107, 255, 0.2);
             border: 1px solid rgba(74, 107, 255, 0.5);
-            color: #fff;
+            color: var(--text-primary);
             padding: 8px 15px;
             border-radius: 20px;
             cursor: pointer;
@@ -214,13 +227,13 @@
             backdrop-filter: blur(10px);
             padding: 20px;
             overflow-y: auto;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid var(--border);
         }
 
         .new-chat-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(90deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border: none;
             border-radius: 10px;
             color: white;
@@ -246,7 +259,7 @@
         .chat-history h3 {
             font-size: 14px;
             margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
         }
 
         .history-item {
@@ -271,7 +284,7 @@
         .delete-btn {
             opacity: 0;
             transition: opacity 0.2s ease;
-            color: #ff4757;
+            color: var(--error);
         }
 
         .history-item:hover .delete-btn {
@@ -288,9 +301,9 @@
 
         .chat-header {
             padding: 15px 20px;
-            background: rgba(26, 31, 58, 0.6);
+            background: var(--bg-light);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 15px;
@@ -300,7 +313,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -323,7 +336,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #4ade80;
+            background: var(--accent);
             animation: blink 2s infinite;
         }
 
@@ -338,7 +351,7 @@
 
         .bot-status {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
         }
 
         .chat-messages {
@@ -377,7 +390,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -386,18 +399,18 @@
         }
 
         .message.user .message-avatar {
-            background: linear-gradient(135deg, #ff7b7b, #ff4757);
+            background: linear-gradient(135deg, #ff7b7b, var(--error));
         }
 
         .message-content {
-            background: rgba(26, 31, 58, 0.8);
+            background: var(--bg-light);
             padding: 15px;
             border-radius: 18px;
             position: relative;
         }
 
         .message.user .message-content {
-            background: linear-gradient(135deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         }
 
         .message-text {
@@ -445,9 +458,9 @@
         /* Input area */
         .input-area {
             padding: 20px;
-            background: rgba(26, 31, 58, 0.8);
+            background: var(--bg-light);
             backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border);
         }
 
         .input-container {
@@ -459,7 +472,7 @@
         .input-field {
             flex: 1;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
             border-radius: 24px;
             padding: 12px 20px;
             color: white;
@@ -469,7 +482,7 @@
         }
 
         .input-field:focus {
-            border-color: #4a6bff;
+            border-color: var(--primary-color);
             background: rgba(255, 255, 255, 0.08);
         }
 
@@ -483,7 +496,7 @@
             height: 44px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
             color: white;
             display: flex;
             align-items: center;
@@ -498,7 +511,7 @@
         }
 
         .send-btn {
-            background: linear-gradient(135deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border: none;
         }
 
@@ -525,7 +538,7 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #1a1f3a, #2d3561);
+            background: linear-gradient(135deg, var(--bg-medium), #2d3561);
             border-radius: 15px;
             width: 90%;
             max-width: 500px;
@@ -579,13 +592,13 @@
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
         }
 
         .settings-input {
             width: 100%;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 10px 15px;
             color: white;
@@ -593,7 +606,7 @@
         }
 
         .settings-input:focus {
-            border-color: #4a6bff;
+            border-color: var(--primary-color);
         }
 
         .toggle-container {
@@ -613,7 +626,7 @@
         }
 
         .toggle.active {
-            background: #4a6bff;
+            background: var(--primary-color);
         }
 
         .toggle-slider {
@@ -634,7 +647,7 @@
         .save-settings {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(90deg, #4a6bff, #8b5cf6);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border: none;
             border-radius: 8px;
             color: white;
@@ -647,6 +660,34 @@
         .save-settings:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(74, 107, 255, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.error {
+            background: rgba(255, 71, 87, 0.8);
+        }
+
+        .notification.success {
+            background: rgba(74, 222, 128, 0.8);
         }
 
         /* Responsive */
@@ -769,6 +810,10 @@
                 </button>
             </div>
             <div class="settings-group">
+                <label class="settings-label">API Key Gemini</label>
+                <input type="password" class="settings-input" id="apiKeyInput" placeholder="Masukkan API Key Gemini">
+            </div>
+            <div class="settings-group">
                 <label class="settings-label">Nama Pengguna</label>
                 <input type="text" class="settings-input" id="usernameInput" placeholder="Masukkan nama Anda">
             </div>
@@ -796,6 +841,9 @@
         </div>
     </div>
 
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
     <script>
         // Current time
         document.getElementById('currentTime').textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -814,8 +862,10 @@
         const soundToggle = document.getElementById('soundToggle');
         const usernameInput = document.getElementById('usernameInput');
         const passwordInput = document.getElementById('passwordInput');
+        const apiKeyInput = document.getElementById('apiKeyInput');
         const themeBtn = document.getElementById('themeBtn');
         const attachBtn = document.getElementById('attachBtn');
+        const notification = document.getElementById('notification');
 
         // State
         let isOwner = false;
@@ -823,9 +873,7 @@
         let currentChatId = Date.now();
         let soundEnabled = false;
         let darkMode = true;
-
-        // API Key for Gemini
-        const API_KEY = "AIzaSyBqrL9yG440dC32pk9eGqZhVIyg8NB4frI";
+        let apiKey = "AIzaSyBqrL9yG440dC32pk9eGqZhVIyg8NB4frI"; // Default API Key
 
         // Initialize
         function init() {
@@ -863,7 +911,7 @@
                 applyTheme();
             });
             attachBtn.addEventListener('click', () => {
-                showNotification('Fitur lampiran akan segera hadir!');
+                showNotification('Fitur lampiran akan segera hadir!', 'error');
             });
         }
 
@@ -887,8 +935,8 @@
             showTypingIndicator();
 
             try {
-                // Call Gemini API
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+                // Call Gemini API with correct model
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -907,22 +955,28 @@
                 });
 
                 const data = await response.json();
-                const botResponse = data.candidates[0].content.parts[0].text;
+                
+                if (response.ok) {
+                    const botResponse = data.candidates[0].content.parts[0].text;
+                    
+                    // Remove typing indicator
+                    removeTypingIndicator();
 
-                // Remove typing indicator
-                removeTypingIndicator();
+                    // Add bot response
+                    addMessage(botResponse, 'bot');
 
-                // Add bot response
-                addMessage(botResponse, 'bot');
-
-                // Play sound if enabled
-                if (soundEnabled) {
-                    playNotificationSound();
+                    // Play sound if enabled
+                    if (soundEnabled) {
+                        playNotificationSound();
+                    }
+                } else {
+                    throw new Error(data.error?.message || 'Terjadi kesalahan saat memproses permintaan Anda');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 removeTypingIndicator();
                 addMessage('Maaf, terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', 'bot');
+                showNotification('Error: ' + error.message, 'error');
             }
 
             // Save to chat history
@@ -1160,6 +1214,7 @@
         function saveUserSettings() {
             const username = usernameInput.value;
             const password = passwordInput.value;
+            const newApiKey = apiKeyInput.value;
 
             if (username) {
                 localStorage.setItem('username', username);
@@ -1169,22 +1224,32 @@
                 localStorage.setItem('password', password);
             }
 
+            if (newApiKey) {
+                apiKey = newApiKey;
+                localStorage.setItem('apiKey', newApiKey);
+            }
+
             localStorage.setItem('darkMode', darkMode);
             localStorage.setItem('soundEnabled', soundEnabled);
 
             settingsModal.classList.remove('active');
-            showNotification('Pengaturan berhasil disimpan!');
+            showNotification('Pengaturan berhasil disimpan!', 'success');
         }
 
         // Load Settings
         function loadSettings() {
             const username = localStorage.getItem('username');
             const password = localStorage.getItem('password');
+            const savedApiKey = localStorage.getItem('apiKey');
             const savedDarkMode = localStorage.getItem('darkMode');
             const savedSoundEnabled = localStorage.getItem('soundEnabled');
 
             if (username) usernameInput.value = username;
             if (password) passwordInput.value = password;
+            if (savedApiKey) {
+                apiKey = savedApiKey;
+                apiKeyInput.value = savedApiKey;
+            }
 
             darkMode = savedDarkMode !== 'false';
             soundEnabled = savedSoundEnabled === 'true';
@@ -1201,34 +1266,24 @@
                 document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)';
                 document.body.style.color = '#333';
             } else {
-                document.body.style.background = 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%)';
-                document.body.style.color = '#fff';
+                document.body.style.background = 'linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 50%, var(--bg-dark) 100%)';
+                document.body.style.color = 'var(--text-primary)';
             }
         }
 
         // Show Notification
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.style.position = 'fixed';
-            notification.style.bottom = '20px';
-            notification.style.left = '50%';
-            notification.style.transform = 'translateX(-50%)';
-            notification.style.background = 'rgba(74, 107, 255, 0.8)';
-            notification.style.color = 'white';
-            notification.style.padding = '12px 24px';
-            notification.style.borderRadius = '30px';
-            notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-            notification.style.zIndex = '1000';
-            notification.style.animation = 'fadeIn 0.3s ease';
+        function showNotification(message, type = 'info') {
             notification.textContent = message;
-
-            document.body.appendChild(notification);
+            notification.className = 'notification show';
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else if (type === 'success') {
+                notification.classList.add('success');
+            }
 
             setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.3s ease';
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
+                notification.classList.remove('show');
             }, 3000);
         }
 
