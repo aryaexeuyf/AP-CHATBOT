@@ -6,13 +6,6 @@
     <title>AP-CHATBOT | APBOT AI by AryaProject</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         :root {
             --primary-color: #4a6bff;
             --secondary-color: #8b5cf6;
@@ -24,6 +17,14 @@
             --accent: #4ade80;
             --error: #ff4757;
             --border: rgba(255, 255, 255, 0.1);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
@@ -32,6 +33,86 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 50%, var(--bg-dark) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-logo i {
+            font-size: 50px;
+            color: white;
+        }
+
+        .loading-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .loading-subtext {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            animation: loading 5s forwards;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* Animated background */
@@ -153,6 +234,7 @@
             align-items: center;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid var(--border);
+            z-index: 100;
         }
 
         .logo {
@@ -167,27 +249,23 @@
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         .logo h1 {
             font-size: 24px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+        }
+
+        .beta-badge {
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
         .header-buttons {
@@ -228,12 +306,13 @@
             padding: 20px;
             overflow-y: auto;
             border-right: 1px solid var(--border);
+            transition: width 0.3s ease;
         }
 
         .new-chat-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             border: none;
             border-radius: 10px;
             color: white;
@@ -313,7 +392,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -390,7 +469,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -410,12 +489,55 @@
         }
 
         .message.user .message-content {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
         }
 
         .message-text {
             margin-bottom: 5px;
             line-height: 1.5;
+        }
+
+        .message-text strong, .message-text b {
+            font-weight: bold;
+        }
+
+        .message-text code {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .message-text pre {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .message-text pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .copy-code-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .copy-code-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .message-time {
@@ -511,12 +633,17 @@
         }
 
         .send-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             border: none;
         }
 
         .send-btn:hover {
             background: linear-gradient(135deg, #5a7cff, #9b6cf6);
+        }
+
+        /* File input */
+        .file-input {
+            display: none;
         }
 
         /* Settings modal */
@@ -647,7 +774,7 @@
         .save-settings {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             border: none;
             border-radius: 8px;
             color: white;
@@ -690,7 +817,7 @@
             background: rgba(74, 222, 128, 0.8);
         }
 
-        /* Responsive */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -711,10 +838,75 @@
             .message {
                 max-width: 95%;
             }
+
+            .chat-container {
+                height: 100vh;
+            }
+
+            header {
+                padding: 10px 15px;
+            }
+
+            .logo h1 {
+                font-size: 18px;
+            }
+
+            .beta-badge {
+                font-size: 8px;
+            }
+
+            .chat-header {
+                padding: 10px 15px;
+            }
+
+            .input-area {
+                padding: 15px;
+            }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            .sidebar {
+                display: none;
+            }
+
+            .chat-area {
+                width: 100%;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .message-content {
+                padding: 12px;
+            }
+
+            .input-field {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="loading-text">AP-CHATBOT</div>
+        <div class="loading-subtext">APBOT AI by AryaProject</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
     <div class="bg-animation">
         <span></span>
         <span></span>
@@ -732,6 +924,7 @@
         <div class="logo">
             <i class="fas fa-robot"></i>
             <h1>AP-CHATBOT</h1>
+            <span class="beta-badge">BETA</span>
         </div>
         <div class="header-buttons">
             <button class="btn" id="settingsBtn">
@@ -787,6 +980,7 @@
             <div class="input-area">
                 <div class="input-container">
                     <input type="text" class="input-field" id="messageInput" placeholder="Ketik pesan Anda...">
+                    <input type="file" class="file-input" id="fileInput" accept="image/*,.pdf,.doc,.docx,.txt">
                     <div class="input-buttons">
                         <button class="icon-btn" id="attachBtn">
                             <i class="fas fa-paperclip"></i>
@@ -865,7 +1059,9 @@
         const apiKeyInput = document.getElementById('apiKeyInput');
         const themeBtn = document.getElementById('themeBtn');
         const attachBtn = document.getElementById('attachBtn');
+        const fileInput = document.getElementById('fileInput');
         const notification = document.getElementById('notification');
+        const loadingScreen = document.getElementById('loadingScreen');
 
         // State
         let isOwner = false;
@@ -875,8 +1071,26 @@
         let darkMode = true;
         let apiKey = "AIzaSyBqrL9yG440dC32pk9eGqZhVIyg8NB4frI"; // Default API Key
 
+        // Device Detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+
+        // Apply mobile-specific styles
+        if (isMobile) {
+            document.body.classList.add('mobile');
+            
+            if (isAndroid) {
+                document.body.classList.add('android');
+            }
+        }
+
         // Initialize
         function init() {
+            // Hide loading screen after 5 seconds
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 5000);
+            
             loadSettings();
             loadChatHistory();
             setupEventListeners();
@@ -911,8 +1125,77 @@
                 applyTheme();
             });
             attachBtn.addEventListener('click', () => {
-                showNotification('Fitur lampiran akan segera hadir!', 'error');
+                fileInput.click();
             });
+            fileInput.addEventListener('change', handleFileUpload);
+        }
+
+        // Handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Add user message with file info
+            addMessage(`📎 Mengirim file: ${file.name}`, 'user');
+            messageInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Read file content
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                let fileContent = '';
+                
+                if (file.type.startsWith('image/')) {
+                    // For images, just acknowledge receipt
+                    fileContent = `Sampun nampi gambar kanthi judul "${file.name}". Kulo bisa ndeleng gambaripun. Punapa ingkang kulo bantu ngenani gambar iki?`;
+                } else {
+                    // For text files, read content
+                    fileContent = e.target.result;
+                    if (fileContent.length > 2000) {
+                        fileContent = fileContent.substring(0, 2000) + '... (dokumen dipotong amargi kekalian)';
+                    }
+                    fileContent = `Sampun nampi dokumen "${file.name}". Isi dokumen:\n\n${fileContent}\n\nPunapa ingkang kulo bantu ngenani dokumen iki?`;
+                }
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Add bot response
+                addMessage(fileContent, 'bot');
+                
+                // Play sound if enabled
+                if (soundEnabled) {
+                    playNotificationSound();
+                }
+                
+                // Save to chat history
+                saveToHistory(`📎 Mengirim file: ${file.name}`, 'user');
+            };
+            
+            if (file.type.startsWith('image/')) {
+                // For images, just send the file info
+                reader.onload = function() {
+                    // Remove typing indicator
+                    removeTypingIndicator();
+                    
+                    // Add bot response
+                    addMessage(`Sampun nampi gambar kanthi judul "${file.name}". Kulo bisa ndeleng gambaripun. Punapa ingkang kulo bantu ngenani gambar iki?`, 'bot');
+                    
+                    // Play sound if enabled
+                    if (soundEnabled) {
+                        playNotificationSound();
+                    }
+                    
+                    // Save to chat history
+                    saveToHistory(`📎 Mengirim file: ${file.name}`, 'user');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                reader.readAsText(file);
+            }
         }
 
         // Send Message
@@ -957,13 +1240,16 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    const botResponse = data.candidates[0].content.parts[0].text;
+                    let botResponse = data.candidates[0].content.parts[0].text;
+                    
+                    // Format text with bold and code blocks
+                    botResponse = formatBotResponse(botResponse);
                     
                     // Remove typing indicator
                     removeTypingIndicator();
 
                     // Add bot response
-                    addMessage(botResponse, 'bot');
+                    addMessage(botResponse, 'bot', true);
 
                     // Play sound if enabled
                     if (soundEnabled) {
@@ -983,8 +1269,42 @@
             saveToHistory(message, 'user');
         }
 
+        // Format bot response with bold and code blocks
+        function formatBotResponse(text) {
+            // Replace **text** with <strong>text</strong>
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Replace *text* with <b>text</b>
+            text = text.replace(/\*(.*?)\*/g, '<b>$1</b>');
+            
+            // Replace `code` with <code>code</code>
+            text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+            
+            // Replace ```code``` with <pre><code>code</code></pre>
+            text = text.replace(/```(.*?)```/gs, '<pre><code>$1</code><button class="copy-code-btn" onclick="copyCode(this)">Salin</button></pre>');
+            
+            return text;
+        }
+
+        // Copy code function
+        function copyCode(button) {
+            const codeBlock = button.previousElementSibling;
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Tersalin!';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin teks: ', err);
+            });
+        }
+
         // Add Message to Chat
-        function addMessage(text, sender) {
+        function addMessage(text, sender, isHtml = false) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', sender);
 
@@ -997,7 +1317,12 @@
 
             const textDiv = document.createElement('div');
             textDiv.classList.add('message-text');
-            textDiv.textContent = text;
+            
+            if (isHtml) {
+                textDiv.innerHTML = text;
+            } else {
+                textDiv.textContent = text;
+            }
 
             const timeDiv = document.createElement('div');
             timeDiv.classList.add('message-time');
