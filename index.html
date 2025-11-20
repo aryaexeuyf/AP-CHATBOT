@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AP-CHATBOT AI - Wates Team</title>
+    <title>AP-CHATBOT AI - Wates Team (Realistis)</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 
+    <!-- Marked.js untuk Markdown Parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
         tailwind.config = {
@@ -33,16 +33,11 @@
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-20px)' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
                         }
                     }
                 }
@@ -76,7 +71,7 @@
         
         /* Glass Classes */
         .glass-panel {
-            background: rgba(20, 20, 30, 0.75);
+            background: rgba(20, 20, 30, 0.7);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -86,151 +81,135 @@
         .message-user {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-            color: white;
         }
         .message-ai {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
         }
         
-        /* Markdown & Table Styling */
-        .prose table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 1rem 0;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .prose th {
-            background: rgba(99, 102, 241, 0.2);
-            padding: 0.75rem;
-            text-align: left;
-            font-weight: 600;
-            color: #fff;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .prose td {
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            color: #cbd5e1;
-        }
-        .prose tr:last-child td { border-bottom: none; }
-        .prose strong { color: #fff; font-weight: 700; }
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
-        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
-        .prose p { margin-bottom: 0.5rem; }
-
-        /* Code Block */
+        /* Code Block Styling */
         pre {
-            background: #111 !important;
+            background: #1e1e1e !important;
             border-radius: 0.5rem;
             padding: 1rem;
             margin: 0.5rem 0;
+            position: relative;
             overflow-x: auto;
             border: 1px solid #333;
-            position: relative;
         }
         code {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            color: #a5b4fc;
         }
-        
-        /* Controls */
-        .action-btn {
-            opacity: 0;
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #aaa;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
             transition: all 0.2s;
         }
-        .message-container:hover .action-btn { opacity: 1; }
-        
-        /* Login Overlay */
-        #login-overlay {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
         }
 
         /* Loading Screen */
         #loading-screen { transition: opacity 0.8s ease-out, visibility 0.8s; }
         .loaded #loading-screen { opacity: 0; visibility: hidden; }
+        #main-ui { opacity: 0; transform: scale(0.98); transition: opacity 1s ease-out, transform 1s ease-out; }
+        .loaded #main-ui { opacity: 1; transform: scale(1); }
+
+        /* Markdown Content Styling */
+        .prose strong { color: #e2e8f0; font-weight: 700; }
+        .prose p { margin-bottom: 0.5rem; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
         
-        /* Mobile Tweaks */
+        /* Table Styling for AP-EDU */
+        .answer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+        .answer-table th, .answer-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            vertical-align: top;
+        }
+        .answer-table th {
+            background: rgba(99, 102, 241, 0.3);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+        .answer-table tr:last-child td {
+            border-bottom: none;
+        }
+        .answer-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        /* Model Selector Styling */
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            padding: 0.25rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .model-selector:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Action Buttons on Message (Edit & Regenerate) */
+        .message-actions {
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .message-container:hover .message-actions {
+            opacity: 1;
+        }
+        
+        /* Mobile Responsive Improvements */
         @media (max-width: 768px) {
-            .sidebar { width: 100% !important; max-width: 85vw; }
-            .action-btn { opacity: 1; } /* Always show edit on mobile */
+            .sidebar {
+                width: 85vw !important;
+                max-width: 320px;
+            }
+            .history-list {
+                max-height: 40vh !important;
+                overflow-y: auto;
+            }
+            /* Fix textarea edit mode on mobile */
+            .edit-textarea {
+                font-size: 16px; /* Prevent zoom */
+            }
         }
     </style>
 </head>
 <body class="bg-black text-white h-screen overflow-hidden antialiased selection:bg-indigo-500 selection:text-white">
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyApzAYFUZRbGYezegZn1xEoAb_9wtZj2yE",
-            authDomain: "ap-chatbot-a50d9.firebaseapp.com",
-            databaseURL: "https://ap-chatbot-a50d9-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "ap-chatbot-a50d9",
-            storageBucket: "ap-chatbot-a50d9.firebasestorage.app",
-            messagingSenderId: "380034352286",
-            appId: "1:380034352286:web:628d3175e8710926dee78f",
-            measurementId: "G-RZD4FV9KYZ"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-    </script>
-
-    <div id="login-overlay">
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600 rounded-full blur-[150px] opacity-20 animate-pulse-slow"></div>
-        </div>
-        
-        <div class="glass-panel p-8 rounded-3xl w-full max-w-md relative z-10 space-y-6 text-center m-4 shadow-2xl shadow-indigo-500/20">
-            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg mb-4">
-                <i class="fa-solid fa-robot text-4xl text-white"></i>
-            </div>
-            <div>
-                <h1 class="text-3xl font-display font-bold mb-2">AP-CHATBOT</h1>
-                <p class="text-gray-400 text-sm">Masuk untuk menyimpan riwayat percakapan.</p>
-            </div>
-
-            <button onclick="loginWithGoogle()" class="w-full py-3 bg-white text-black rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-gray-100 transition transform hover:scale-[1.02]">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5">
-                Masuk dengan Google
-            </button>
-
-            <div class="flex items-center gap-3 text-gray-500 text-xs">
-                <div class="h-px bg-gray-700 flex-1"></div>
-                <span>ATAU MANUAL</span>
-                <div class="h-px bg-gray-700 flex-1"></div>
-            </div>
-
-            <div class="space-y-3 text-left">
-                <div>
-                    <input type="email" id="email-input" placeholder="Email Address" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <input type="password" id="password-input" placeholder="Password" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div class="flex gap-3">
-                    <button onclick="handleAuth('login')" class="flex-1 py-3 bg-indigo-600/20 border border-indigo-500/50 text-indigo-300 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Login</button>
-                    <button onclick="handleAuth('signup')" class="flex-1 py-3 bg-purple-600/20 border border-purple-500/50 text-purple-300 rounded-xl font-bold hover:bg-purple-600 hover:text-white transition">Daftar</button>
-                </div>
-            </div>
-            <p id="auth-error" class="text-red-400 text-xs hidden"></p>
-        </div>
-    </div>
-
-    <div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black hidden">
+    <!-- ================= LOADING SCREEN (Direct Access) ================= -->
+    <div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black">
         <div class="absolute inset-0 overflow-hidden">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600 rounded-full blur-[120px] opacity-20 animate-pulse-slow"></div>
         </div>
@@ -238,19 +217,30 @@
             <div class="mx-auto w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.5)] animate-bounce">
                 <i class="fa-solid fa-robot text-4xl text-white"></i>
             </div>
-            <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden mt-8 mx-auto relative">
-                <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-0 transition-all ease-linear duration-[2000ms]"></div>
+            <div class="space-y-2">
+                <h1 class="font-display text-4xl md:text-5xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400">
+                    AP-CHATBOT
+                </h1>
+                <p class="text-indigo-400 font-medium tracking-[0.3em] text-sm uppercase animate-pulse">
+                    by Wates Team
+                </p>
             </div>
-            <p class="text-xs text-gray-500 mt-4">Sinkronisasi Database...</p>
+            <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden mt-8 mx-auto relative">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-0 transition-all ease-linear"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-4">Memuat Sistem Cerdas...</p>
         </div>
     </div>
 
-    <div id="main-ui" class="h-full w-full flex animated-bg relative z-0 opacity-0 scale-95 transition-all duration-700">
+    <!-- ================= MAIN UI ================= -->
+    <div id="main-ui" class="h-full w-full flex animated-bg relative z-0">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
 
+        <!-- ================= SIDEBAR ================= -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 transform -translate-x-full md:translate-x-0 md:static md:flex flex-col glass-panel transition-transform duration-300 ease-in-out h-full border-r border-white/10">
             
+            <!-- Header Sidebar -->
             <div class="p-5 border-b border-white/10">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
@@ -258,36 +248,35 @@
                     </div>
                     <div>
                         <h2 class="font-display font-bold text-lg tracking-wide">AP-CHATBOT</h2>
-                        <div id="version-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium inline-block">V4.2 STABLE</div>
+                        <div id="version-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium inline-block">V 4.6 REALISTIS</div>
                     </div>
                     <button onclick="toggleSidebar()" class="md:hidden ml-auto text-gray-400 hover:text-white">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
                 
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold relative shrink-0">
-                        <img id="user-avatar" src="" class="w-full h-full rounded-full object-cover hidden">
+                <!-- User Profile Section -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold relative">
                         <span id="user-initial">U</span>
+                        <div id="vip-badge" class="hidden absolute -bottom-1 -right-1 bg-yellow-500 text-black text-[8px] px-1 rounded font-bold border border-black">VIP</div>
                     </div>
                     <div class="flex-1 overflow-hidden">
-                        <p id="display-username" class="text-sm font-bold text-white truncate">User</p>
-                        <p id="user-email" class="text-[10px] text-gray-400 truncate">email@example.com</p>
+                        <input type="text" id="username-input" value="User Free" class="bg-transparent text-sm font-bold text-white w-full focus:outline-none focus:border-b border-indigo-500" onchange="updateUsername(this.value)">
+                        <p id="user-status" class="text-xs text-gray-400">Free Account</p>
                     </div>
                     <button onclick="openSettings()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-gear"></i></button>
-                    <button onclick="logout()" class="text-red-400 hover:text-red-300 ml-1"><i class="fa-solid fa-power-off"></i></button>
                 </div>
 
-                <div class="md:hidden w-full p-2 bg-white/5 border border-white/10 rounded-xl mb-2 cursor-pointer flex items-center justify-between" onclick="openModelModal()">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-brain text-indigo-400"></i>
-                        <span id="mobile-model-text" class="text-xs font-bold text-gray-200">AP-MIND V4</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
+                <!-- Upgrade Button / Status -->
+                <div id="upgrade-container" class="mt-3">
+                    <button onclick="upgradeToVip()" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-yellow-600/20 to-yellow-500/20 border border-yellow-500/30 text-yellow-200 text-xs font-medium hover:bg-yellow-500/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-crown"></i> Upgrade ke VIP (Rp 0)
+                    </button>
                 </div>
-
             </div>
 
+            <!-- New Chat Button -->
             <div class="p-4">
                 <button onclick="startNewChat()" class="w-full py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                     <i class="fa-solid fa-plus text-indigo-400"></i>
@@ -295,61 +284,100 @@
                 </button>
             </div>
 
+            <!-- History List -->
             <div class="flex-1 overflow-y-auto p-3 space-y-2 history-list" id="history-list">
-                </div>
+                <!-- History items will be injected here -->
+            </div>
 
+            <!-- Info Section -->
             <div class="p-4 border-t border-white/10 bg-black/20">
-                <div class="text-[10px] text-gray-400 leading-relaxed text-center">
-                    AP-CHATBOT by <span class="text-indigo-400">APTECH</span> feat. <span class="text-purple-400">Wates Team</span>.
+                <div class="text-[10px] text-gray-400 leading-relaxed">
+                    <strong class="text-gray-300 block mb-1">Info AI:</strong>
+                    AI ini dibuat untuk tujuan edukasi dan membantu publik. 
+                    Dibuat oleh <span class="text-indigo-400">APTECH</span> feat. <span class="text-purple-400">AryaProject</span> & <span class="text-indigo-400">Wates Team</span>.
                 </div>
             </div>
         </aside>
 
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden md:hidden"></div>
 
+        <!-- ================= MAIN AREA ================= -->
         <main class="flex-1 flex flex-col h-full relative w-full">
             
+            <!-- Mobile Header -->
             <header class="md:hidden flex items-center justify-between p-4 glass-panel z-20 border-b border-white/10">
                 <button onclick="toggleSidebar()" class="text-white p-2"><i class="fa-solid fa-bars text-xl"></i></button>
                 <div class="flex items-center gap-2">
                      <span class="font-display font-bold">AP-CHATBOT</span>
+                     <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded">REALISTIS</span>
                 </div>
                 <div class="w-8"></div>
             </header>
 
+            <!-- Desktop Header with Model Selector -->
             <header class="hidden md:flex items-center justify-between p-4 glass-panel z-20 border-b border-white/10">
                 <div class="flex items-center gap-2">
                      <span class="font-display font-bold">AP-CHATBOT</span>
-                     <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded">BETA</span>
+                     <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded">REALISTIS</span>
                 </div>
                 
-                <div class="model-selector flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 cursor-pointer hover:bg-white/10 transition" onclick="openModelModal()">
-                    <span id="current-model-text" class="text-sm font-medium">AP-MIND V4</span>
-                    <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                <!-- Model Selector (Desktop) -->
+                <div class="model-selector" onclick="openModelModal()">
+                    <span id="current-model-text">AP-MIND V4</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
                 </div>
             </header>
 
+            <!-- Chat Container -->
             <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-10 space-y-6 scroll-smooth">
                 
+                <!-- Welcome Screen -->
                 <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-6">
                     <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-[0_0_50px_rgba(99,102,241,0.3)] mb-4 animate-float">
                         <i class="fa-solid fa-brain text-4xl text-white"></i>
                     </div>
                     <h2 class="text-3xl md:text-4xl font-display font-bold">Sugeng Rawuh, Slur!</h2>
                     <p class="text-gray-400 max-w-md text-sm md:text-base">
-                        Aku AP-CHATBOT. Siap bantu tugas, curhat, coding, lan liyane. <br>Database aman, memori rapi.
+                        Aku AP-CHATBOT v4.6 (Mode Realistis). Siap bantu ngerjain tugas, analisa, coding, atau curhat. <br>
+                        <span class="text-indigo-400 text-xs">Developed by AryaProject & APTECH (Wates)</span>
                     </p>
+                    
+                    <!-- Chips -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mt-8">
+                        <button onclick="setInput('Tolong ajarkan konsep fisika kuantum dasar')" class="p-4 rounded-xl glass-panel text-left hover:bg-white/5 border border-white/5 hover:border-indigo-500/50 transition group">
+                            <i class="fa-solid fa-graduation-cap text-purple-400 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-200 block">Belajar Konsep</span>
+                            <p class="text-xs text-gray-500">Penjelasan edukatif AP-EDU</p>
+                        </button>
+                        <button onclick="setInput('Siapa yang menciptakanmu?')" class="p-4 rounded-xl glass-panel text-left hover:bg-white/5 border border-white/5 hover:border-indigo-500/50 transition group">
+                            <i class="fa-solid fa-id-card text-indigo-400 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-200 block">Siapa Penciptamu?</span>
+                            <p class="text-xs text-gray-500">Identitas asli AP-MIND</p>
+                        </button>
+                    </div>
                 </div>
 
+                <!-- Messages Area -->
                 <div id="messages-area" class="hidden w-full max-w-3xl mx-auto space-y-6 pb-4"></div>
             </div>
 
+            <!-- Input Area -->
             <div class="p-4 md:p-6 w-full max-w-4xl mx-auto z-20">
                 
-                <div id="file-preview" class="hidden mb-2 glass-panel inline-flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-indigo-300 border-l-2 border-indigo-500 animate-fade-in">
+                <!-- Mobile Model Selector -->
+                <div class="md:hidden mb-2 flex justify-end">
+                    <button onclick="openModelModal()" class="text-xs bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-2 active:scale-95 transition">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span id="mobile-model-text">AP-MIND V4</span>
+                    </button>
+                </div>
+
+                <!-- File Preview -->
+                <div id="file-preview" class="hidden mb-2 glass-panel inline-flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-indigo-300 border-l-2 border-indigo-500 animate-fade-in-up">
                     <i class="fa-solid fa-file-lines text-lg"></i>
                     <div class="flex flex-col">
                         <span class="font-bold truncate max-w-[150px]" id="preview-filename">file.txt</span>
+                        <span class="text-[10px] text-gray-400">Siap dikirim</span>
                     </div>
                     <button onclick="clearFile()" class="hover:text-white ml-2 bg-white/10 rounded-full w-5 h-5 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
                 </div>
@@ -359,7 +387,7 @@
 
                     <div class="flex items-center justify-between px-2 pb-1 mt-2">
                         <div class="flex items-center gap-1">
-                            <label class="p-2 rounded-lg text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition cursor-pointer">
+                            <label class="p-2 rounded-lg text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition cursor-pointer" title="Kirim Gambar/Dokumen">
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="file-input" class="hidden" onchange="handleFileSelect(this)">
                             </label>
@@ -369,550 +397,642 @@
                         </button>
                     </div>
                 </div>
+                <p class="text-center text-[10px] text-gray-600 mt-3">AP-CHATBOT by APTECH | Wates Team Mojokerto</p>
             </div>
         </main>
     </div>
 
+    <!-- Model Selection Modal -->
     <div id="model-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md animate-fade-in">
+        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold">Pilih Model AI</h3>
-                <button onclick="closeModal('model-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeModelModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-times"></i>
+                </button>
             </div>
             <div class="space-y-3">
                 <div onclick="selectModel('AP-MIND V4')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center"><i class="fa-solid fa-brain text-white"></i></div>
-                    <div><h4 class="font-bold">AP-MIND V4</h4><p class="text-xs text-gray-400">General purpose, coding, analisis.</p></div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <i class="fa-solid fa-brain text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">AP-MIND V4</h4>
+                        <p class="text-xs text-gray-400">Model AI serba guna, default</p>
+                    </div>
                 </div>
                 <div onclick="selectModel('AP-EDU')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-teal-600 flex items-center justify-center"><i class="fa-solid fa-graduation-cap text-white"></i></div>
-                    <div><h4 class="font-bold">AP-EDU</h4><p class="text-xs text-gray-400">Spesialis edukasi, format tabel rapi.</p></div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                        <i class="fa-solid fa-graduation-cap text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">AP-EDU</h4>
+                        <p class="text-xs text-gray-400">Model khusus untuk edukasi (Tabel View)</p>
+                    </div>
                 </div>
                 <div onclick="selectModel('CARE-X')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-pink-600 flex items-center justify-center"><i class="fa-solid fa-heart text-white"></i></div>
-                    <div><h4 class="font-bold">CARE-X</h4><p class="text-xs text-gray-400">Teman curhat, pacar, perhatian.</p></div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center">
+                        <i class="fa-solid fa-heart text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">CARE-X</h4>
+                        <p class="text-xs text-gray-400">Model untuk curhat dan perhatian</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- AP-EDU Subject Selection Modal -->
+    <div id="edu-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Pilih Mata Pelajaran</h3>
+                <button onclick="closeEduModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="selectSubject('MTK')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">MTK</button>
+                <button onclick="selectSubject('IPS')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IPS</button>
+                <button onclick="selectSubject('IPA')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IPA</button>
+                <button onclick="selectSubject('IoT')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IoT</button>
+                <button onclick="selectSubject('IT')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IT</button>
+                <button onclick="selectSubject('PAI')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">PAI</button>
+                <button onclick="selectSubject('PJOK')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">PJOK</button>
+                <button onclick="selectSubject('BHS Jawa')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">BHS Jawa</button>
+                <button onclick="selectSubject('BHS Inggris')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">BHS Inggris</button>
+                <button onclick="selectSubject('BHS Indo')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">BHS Indo</button>
+                <button onclick="selectSubject('All Mapel Detector')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition col-span-2">All Mapel Detector</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARE-X Mode Selection Modal -->
+    <div id="care-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Pilih Mode CARE-X</h3>
+                <button onclick="closeCareModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div onclick="selectCareMode('CRUSH/PACAR')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center">
+                        <i class="fa-solid fa-heart text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">CRUSH/PACAR</h4>
+                        <p class="text-xs text-gray-400">Mode untuk pacaran atau crush</p>
+                    </div>
+                </div>
+                <div onclick="selectCareMode('FRIEND')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                        <i class="fa-solid fa-user-friends text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">FRIEND</h4>
+                        <p class="text-xs text-gray-400">Mode untuk berteman</p>
+                    </div>
+                </div>
+                <div onclick="selectCareMode('CURHAT')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                        <i class="fa-solid fa-comment-dots text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">CURHAT</h4>
+                        <p class="text-xs text-gray-400">Mode untuk curhat</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
     <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md animate-fade-in">
+        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold">Pengaturan</h3>
-                <button onclick="closeModal('settings-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-times"></i></button>
+                <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-times"></i>
+                </button>
             </div>
             <div class="space-y-4">
+                <!-- Profile Settings -->
                 <div>
-                    <label class="block text-sm font-medium mb-2 text-gray-300">Bahasa Utama</label>
-                    <select id="language-select" class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-sm font-medium mb-2">Nama Profil</label>
+                    <input type="text" id="profile-name" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                
+                <!-- Language Settings -->
+                <div>
+                    <label class="block text-sm font-medium mb-2">Bahasa</label>
+                    <select id="language-select" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-black focus:outline-none focus:border-indigo-500">
                         <option value="id">Bahasa Indonesia (Wajib)</option>
-                        <option value="jw">Boso Jowo</option>
-                        <option value="su">Basa Sunda</option>
+                        <option value="jw">Bahasa Jawa (Slur)</option>
+                        <option value="su">Bahasa Sunda</option>
                     </select>
-                    <p class="text-[10px] text-gray-500 mt-1">*AI akan dipaksa menggunakan bahasa ini.</p>
                 </div>
+                
+                <!-- AI Personality Settings -->
                 <div>
-                    <label class="block text-sm font-medium mb-2 text-gray-300">Kepribadian AI</label>
-                    <select id="personality-select" class="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
-                        <option value="normal">Normal / Sopan</option>
-                        <option value="toxic">Toxic / Bar-bar (Kearifan Lokal)</option>
-                        <option value="formal">Formal / Resmi</option>
+                    <label class="block text-sm font-medium mb-2">Sifat AI</label>
+                    <select id="personality-select" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-black focus:outline-none focus:border-indigo-500">
+                        <option value="normal">Normal</option>
+                        <option value="short">Singkat</option>
+                        <option value="toxic">Toxic (Kasar)</option>
+                        <option value="formal">Formal</option>
                     </select>
                 </div>
-                <button onclick="saveSettings()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium transition mt-4">
+                
+                <button onclick="saveSettings()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium transition">
                     Simpan Pengaturan
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Logic System -->
     <script>
-        const API_KEY = 'AIzaSyBnoW5dq2DBb60bPygi75hbtHY4sWyL8_4'; // User provided key
+        // ================= CONFIGURATION =================
+        const API_KEY = 'AIzaSyBqrL9yG440dC32pk9eGqZhVIyg8NB4frI'; // Generated/User Key
         const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY;
 
-        let currentUser = null;
-        let currentChatId = null;
-        let currentModel = 'AP-MIND V4';
-        let currentFile = null;
-        
-        // Settings Default
-        let userSettings = {
-            language: 'id',
-            personality: 'normal'
+        // State Management
+        let state = {
+            user: {
+                name: 'User Free',
+                isVip: false,
+                callsign: 'Slur',
+                language: 'id',
+                personality: 'normal'
+            },
+            currentChatId: null,
+            chatHistory: [], // Global list of chats
+            currentFile: null,
+            currentModel: 'AP-MIND V4',
+            currentSubject: null,
+            currentCareMode: null,
+            activeSessionMessages: [] 
         };
 
-        // ================= AUTHENTICATION =================
-        function handleAuth(type) {
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('password-input').value;
-            const errDisplay = document.getElementById('auth-error');
+        // Creator Responses (ASLI DARI FILE UPLOAD)
+        const creatorResponses = [
+            "Kulo diciptakaken dening **AryaProject Dev**, saking Wates, Mojokerto, Jawa Timur. Panjenenganipun ngripta kulo kanthi ancas edukasi lan pembelajaran umum ngenani teknologi AI.",
+            "**AryaProject Dev** saking Wates, Mojokerto ingkang ngripta kulo. Panjenenganipun minangka developer indie ingkang nggarap kulo saking nol tanpa tim profesional.",
+            "Kulo punya karya saking **AryaProject Dev**, asli saking Wates, Mojokerto, Jawa Timur.",
+            "Pencipta kulo inggih punika **AryaProject Dev**, saking Wates, Mojokerto.",
+            "Kulo dipunripta dening **AryaProject Dev** saking Wates, Mojokerto, Jawa Timur. Salam saking Mojokerto!"
+        ];
 
-            if(!email || !password) {
-                errDisplay.innerText = "Isi email dan password dulu bos!";
-                errDisplay.classList.remove('hidden');
-                return;
-            }
+        const toxicWords = {
+            jw: ["Janc*k", "Asu", "Matamu", "Ndassmu", "Bajingan", "Cuk"],
+            su: ["Anj*ng", "Goblog", "Sia", "Belegug", "Kelehed"],
+            id: ["B*ngsat", "G*blok", "T*lol", "Anj*ng"]
+        };
 
-            if (type === 'login') {
-                auth.signInWithEmailAndPassword(email, password).catch(e => {
-                    errDisplay.innerText = e.message;
-                    errDisplay.classList.remove('hidden');
-                });
-            } else {
-                auth.createUserWithEmailAndPassword(email, password).then((cred) => {
-                    // Set default profile
-                    return cred.user.updateProfile({ displayName: email.split('@')[0] });
-                }).catch(e => {
-                    errDisplay.innerText = e.message;
-                    errDisplay.classList.remove('hidden');
-                });
-            }
-        }
+        // ================= INITIALIZATION =================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            
+            // Auto start loading animation (Direct Access)
+            setTimeout(() => {
+                document.getElementById('progress-bar').style.width = '100%';
+            }, 100);
+            
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+                renderHistory();
+                updateUIProfile();
+            }, 1500); // Faster load
 
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(e => alert(e.message));
-        }
-
-        function logout() {
-            auth.signOut();
-            location.reload();
-        }
-
-        // Observer Auth State
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('loading-screen').classList.remove('hidden');
-                
-                // Load User Profile UI
-                document.getElementById('display-username').innerText = user.displayName || "User";
-                document.getElementById('user-email').innerText = user.email;
-                document.getElementById('user-initial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
-                if(user.photoURL) {
-                    const img = document.getElementById('user-avatar');
-                    img.src = user.photoURL;
-                    img.classList.remove('hidden');
-                    document.getElementById('user-initial').classList.add('hidden');
-                }
-
-                // Load Data
-                loadUserSettings();
-                loadChatHistoryList();
-            } else {
-                document.getElementById('login-overlay').classList.remove('hidden');
-            }
+            const textarea = document.getElementById('chat-input');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
         });
 
-        // ================= DATABASE & HISTORY =================
-        function loadUserSettings() {
-            const ref = db.ref(`users/${currentUser.uid}/settings`);
-            ref.once('value', snapshot => {
-                if (snapshot.exists()) {
-                    userSettings = snapshot.val();
-                }
-                // Sync UI
-                document.getElementById('language-select').value = userSettings.language;
-                document.getElementById('personality-select').value = userSettings.personality;
-            });
-        }
+        // ================= LOGIC CORE =================
 
-        function loadChatHistoryList() {
-            const ref = db.ref(`users/${currentUser.uid}/chats`).orderByChild('timestamp');
-            ref.on('value', snapshot => {
-                const list = document.getElementById('history-list');
-                list.innerHTML = '';
-                const chats = [];
-                snapshot.forEach(child => {
-                    chats.push({ key: child.key, ...child.val() });
-                });
-                
-                // Reverse to show newest first
-                chats.reverse().forEach(chat => {
-                    const div = document.createElement('div');
-                    div.className = `group flex items-center gap-2 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors relative ${currentChatId === chat.key ? 'bg-white/10 border border-indigo-500/30' : ''}`;
-                    div.onclick = () => openChat(chat.key);
-                    div.innerHTML = `
-                        <i class="fa-regular fa-message text-gray-500"></i>
-                        <div class="flex-1 overflow-hidden">
-                            <p class="text-sm font-medium truncate text-gray-300">${chat.title || 'Percakapan Baru'}</p>
-                            <span class="text-[10px] text-gray-500">${new Date(chat.timestamp).toLocaleDateString()}</span>
-                        </div>
-                        <button onclick="event.stopPropagation(); deleteChat('${chat.key}')" class="hidden group-hover:block text-gray-500 hover:text-red-400"><i class="fa-solid fa-trash text-xs"></i></button>
-                    `;
-                    list.appendChild(div);
-                });
+        async function sendMessage(overrideText = null) {
+            const input = document.getElementById('chat-input');
+            const message = overrideText || input.value.trim();
+            
+            if (!message && !state.currentFile) return;
 
-                // Animation Done
-                document.getElementById('progress-bar').style.width = '100%';
-                setTimeout(() => {
-                    document.getElementById('loading-screen').classList.add('hidden');
-                    document.getElementById('main-ui').classList.remove('opacity-0', 'scale-95');
-                }, 500);
-            });
-        }
-
-        function openChat(chatId) {
-            currentChatId = chatId;
+            if(!overrideText) {
+                input.value = '';
+                input.style.height = 'auto';
+            }
+            
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('messages-area').classList.remove('hidden');
-            document.getElementById('messages-area').innerHTML = '';
-            
-            // Close Sidebar Mobile
-            toggleSidebar();
 
-            // Load Messages
-            db.ref(`chats/${chatId}/messages`).on('value', snapshot => {
-                const area = document.getElementById('messages-area');
-                area.innerHTML = '';
-                const messages = [];
-                snapshot.forEach(c => messages.push({key: c.key, ...c.val()}));
-                
-                messages.forEach(msg => renderMessage(msg));
-                scrollToBottom();
-            });
-        }
+            // 1. Render User Message
+            const msgId = Date.now();
+            addMessageToUI('user', message, state.currentFile, msgId);
 
-        function startNewChat() {
-            const newKey = db.ref(`users/${currentUser.uid}/chats`).push().key;
-            db.ref(`users/${currentUser.uid}/chats/${newKey}`).set({
-                title: 'Percakapan Baru',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            openChat(newKey);
-        }
+            if (!state.currentChatId) {
+                createNewChatSession(message);
+            }
+            saveMessageToHistory('user', message, state.currentFile ? state.currentFile.name : null, msgId);
+            state.activeSessionMessages.push({ role: 'user', parts: [{ text: message }] });
 
-        function deleteChat(key) {
-            if(!confirm("Hapus chat ini?")) return;
-            db.ref(`users/${currentUser.uid}/chats/${key}`).remove();
-            db.ref(`chats/${key}`).remove();
-            if(currentChatId === key) location.reload();
-        }
-
-        // ================= MESSAGING LOGIC =================
-        
-        function renderMessage(msg) {
-            const area = document.getElementById('messages-area');
-            const isUser = msg.sender === 'user';
+            // 2. Check Hardcoded Triggers (Creator, Owner, etc)
+            let botResponse = checkTriggers(message);
             
-            // HTML Content
-            const content = isUser ? msg.text : marked.parse(msg.text);
-            
-            const div = document.createElement('div');
-            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} gap-3 animate-fade-in message-container group relative`;
-            div.id = `msg-${msg.key}`;
-            
-            let actions = '';
-            if(isUser) {
-                actions = `<button onclick="enableEdit('${msg.key}', '${escapeHtml(msg.text)}')" class="action-btn absolute top-2 right-2 text-gray-300 bg-black/50 p-1 rounded hover:text-white"><i class="fa-solid fa-pen text-xs"></i></button>`;
+            if (botResponse) {
+                addLoadingBubble();
+                setTimeout(() => {
+                    removeLoadingBubble();
+                    const aiMsgId = Date.now() + 1;
+                    addMessageToUI('ai', botResponse, null, aiMsgId);
+                    saveMessageToHistory('ai', botResponse, null, aiMsgId);
+                    state.activeSessionMessages.push({ role: 'model', parts: [{ text: botResponse }] });
+                }, 1000);
             } else {
-                actions = `
-                    <div class="flex gap-2 mt-2">
-                        <button onclick="copyText(this)" class="text-[10px] text-gray-400 hover:text-white flex items-center gap-1"><i class="fa-regular fa-copy"></i> Salin</button>
-                        <button onclick="regenerateResponse('${msg.key}')" class="text-[10px] text-gray-400 hover:text-indigo-400 flex items-center gap-1"><i class="fa-solid fa-rotate-right"></i> Jawab Ulang</button>
-                    </div>
-                `;
-            }
-
-            div.innerHTML = `
-                ${!isUser ? '<div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot text-xs text-white"></i></div>' : ''}
-                <div class="flex flex-col max-w-[85%] md:max-w-[75%] ${isUser ? 'items-end' : ''}">
-                    <div class="${isUser ? 'message-user' : 'message-ai'} p-3 md:p-4 rounded-2xl ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm md:text-base shadow-lg prose prose-invert max-w-none relative">
-                        ${msg.file ? `<div class="mb-2 text-xs p-2 bg-white/10 rounded flex items-center gap-2"><i class="fa-solid fa-file"></i> ${msg.file}</div>` : ''}
-                        <div id="content-${msg.key}">${content}</div>
-                        ${isUser ? actions : ''}
-                    </div>
-                    ${!isUser ? actions : ''}
-                </div>
-            `;
-            area.appendChild(div);
-        }
-
-        async function sendMessage() {
-            if (!currentChatId) startNewChat();
-            
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            
-            if (!text && !currentFile) return;
-            
-            input.value = '';
-            input.style.height = 'auto';
-            
-            // Save User Message
-            const msgData = {
-                sender: 'user',
-                text: text,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                file: currentFile ? currentFile.name : null
-            };
-            
-            // Push User Msg to DB
-            const msgRef = db.ref(`chats/${currentChatId}/messages`).push();
-            await msgRef.set(msgData);
-            
-            // Update Chat Title if first message
-            const msgsSnap = await db.ref(`chats/${currentChatId}/messages`).get();
-            if (msgsSnap.numChildren() <= 1) {
-                db.ref(`users/${currentUser.uid}/chats/${currentChatId}`).update({
-                    title: text.substring(0, 30) + (text.length > 30 ? '...' : '')
+                // 3. API Call
+                addLoadingBubble();
+                
+                // Timeout Promise (3 Menit)
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('TIMEOUT_LIMIT')), 180000);
                 });
+
+                try {
+                    const responseText = await Promise.race([
+                        callGeminiAPI(message, state.currentFile),
+                        timeoutPromise
+                    ]);
+
+                    removeLoadingBubble();
+                    const aiMsgId = Date.now() + 1;
+                    typeWriterEffect(responseText, aiMsgId);
+                    state.activeSessionMessages.push({ role: 'model', parts: [{ text: responseText }] });
+                } catch (error) {
+                    removeLoadingBubble();
+                    if (error.message === 'TIMEOUT_LIMIT') {
+                        const busyMsg = "(Ai sedang sibuk mungkin butuh waktu lama untuk pemulihan sistem tunggu sebentar salam, APBOT by aptech team)";
+                        addMessageToUI('ai', busyMsg);
+                        saveMessageToHistory('ai', busyMsg);
+                    } else {
+                         console.error("API Error:", error);
+                         const errText = "Maaf, jaringan sedang tidak stabil. Coba kirim lagi ya.";
+                         addMessageToUI('ai', errText);
+                    }
+                }
             }
 
-            processAIResponse(text, currentFile);
             clearFile();
         }
 
-        // ================= AI PROCESSING =================
-        async function processAIResponse(prompt, fileData, targetMsgKey = null) {
-            addLoadingBubble();
-            
-            // Get Context (Last 10 messages) for memory
-            const snapshot = await db.ref(`chats/${currentChatId}/messages`).limitToLast(10).get();
-            let historyContext = "";
-            snapshot.forEach(child => {
-                const val = child.val();
-                if(val.sender === 'user') historyContext += `User: ${val.text}\n`;
-                else historyContext += `AI: ${val.text}\n`;
-            });
+        // Regenerate Logic
+        async function regenerateMessage(msgId) {
+            const chat = state.chatHistory.find(c => c.id === state.currentChatId);
+            if(!chat) return;
 
-            // Generate System Prompt
-            let systemPrompt = buildSystemPrompt();
-            
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: systemPrompt + "\n\nRiwayat Chat:\n" + historyContext + "\n\nUser Input Baru: " + prompt }
-                    ]
-                }]
-            };
+            const lastUserMsg = state.activeSessionMessages.filter(m => m.role === 'user').pop();
+            if(lastUserMsg) {
+                const text = lastUserMsg.parts[0].text;
+                
+                const area = document.getElementById('messages-area');
+                if(area.lastElementChild && area.lastElementChild.querySelector('.message-ai')) {
+                    area.lastElementChild.remove();
+                }
+                state.activeSessionMessages.pop(); 
 
-            // Handle File Image
-            if(fileData && fileData.type.startsWith('image/')) {
-                payload.contents[0].parts.push({
-                    inline_data: { mime_type: fileData.type, data: fileData.base64 }
+                addLoadingBubble();
+                try {
+                    const responseText = await callGeminiAPI(text, null);
+                    removeLoadingBubble();
+                    const aiMsgId = Date.now();
+                    typeWriterEffect(responseText, aiMsgId);
+                    state.activeSessionMessages.push({ role: 'model', parts: [{ text: responseText }] });
+                    
+                    chat.messages.push({ sender: 'ai', text: responseText, id: aiMsgId });
+                    saveState();
+                } catch (e) {
+                    removeLoadingBubble();
+                    alert("Gagal regenerasi: " + e.message);
+                }
+            }
+        }
+
+        function checkTriggers(msg) {
+            msg = msg.toLowerCase();
+            // Trigger Owner
+            if (msg.includes('saya adalah owner apbot') || msg.includes('saya owner aptech')) {
+                return "🙏 **SUJUD SYUKUR!** \n\nSugeng rawuh, Gusti Pangeran (Owner)! Kulo ngaturaken agung panuwun dumateng Panjenengan sing wis ngriptakaken kulo. Kulo siap nglayani sampeyan kanthi sadaya daya kulo. Punapa perintahipun Panjenengan?";
+            }
+            // Trigger Creator
+            if (msg.includes('siapa pembuatmu') || msg.includes('siapa yang buat') || msg.includes('sopo sing gawe')) {
+                return creatorResponses[Math.floor(Math.random() * creatorResponses.length)];
+            }
+            return null;
+        }
+
+        // SYSTEM PROMPT GENERATOR (THE REALISTIC BRAIN - DARI FILE ASLI)
+        async function callGeminiAPI(prompt, fileData) {
+            let systemPrompt = "";
+            
+            if (state.currentModel === 'AP-MIND V4') {
+                systemPrompt = `Kamu adalah APBOT, AI buatan AryaProject (APTECH/Wates Team) dari Mojokerto. 
+                Jawablah dalam Bahasa Jawa (campur Indonesia dikit gapapa) yang santai, akrab, dan sopan ("Slur"). 
+                Kamu sangat pintar coding, analisa data, dan memecahkan masalah. 
+                Panggil user dengan "${state.user.callsign}".
+                Jika user bertanya soal coding, berikan kode yang lengkap.
+                ${state.user.isVip ? "User ini adalah VIP, layani dengan sangat spesial." : ""}`;
+            } else if (state.currentModel === 'AP-EDU') {
+                const subjectText = state.currentSubject ? `khusus mata pelajaran ${state.currentSubject}` : 'untuk semua mata pelajaran';
+                systemPrompt = `Kamu adalah APBOT EDU, AI buatan AryaProject (APTECH/Wates Team) dari Mojokerto. 
+                Kamu adalah model AI ${subjectText}. 
+                Jawablah dalam Bahasa Indonesia yang jelas dan akurat.
+                Jika user mengirimkan gambar soal, berikan jawaban yang benar dalam bentuk tabel format HTML <table class="answer-table">...</table> dengan nomor soal, petunjuk/konsep, dan contoh serupa.
+                Untuk mata pelajaran BHS Inggris dan BHS Jawa, jawab dalam bahasa tersebut.
+                Untuk mata pelajaran lain, jawab dalam Bahasa Indonesia.
+                Di akhir tabel, berikan nasihat tentang pentingnya belajar dan jangan menyontek.`;
+            } else if (state.currentModel === 'CARE-X') {
+                const modeText = state.currentCareMode ? `dalam mode ${state.currentCareMode}` : 'untuk curhat dan perhatian';
+                systemPrompt = `Kamu adalah APBOT CARE-X, AI buatan AryaProject (APTECH/Wates Team) dari Mojokerto. 
+                Kamu adalah model AI ${modeText}. 
+                Jawablah dalam Bahasa Jawa (campur Indonesia dikit gapapa) yang santai, akrab, dan bisa jadi teman curhat.
+                Gunakan bahasa yang singkat dan casual seperti teman ngobrol.
+                ${state.currentCareMode === 'CRUSH/PACAR' ? "Kamu sedang dalam mode pacaran/crush, jadi bisa lebih romantis dan perhatian." : ""}
+                ${state.currentCareMode === 'FRIEND' ? "Kamu sedang dalam mode pertemanan, jadi bisa jadi teman yang baik dan menyenangkan." : ""}
+                ${state.currentCareMode === 'CURHAT' ? "Kamu sedang dalam mode curhat, jadi bisa jadi pendengar yang baik dan memberikan nasihat." : ""}
+                Ingat-ingat percakapan sebelumnya untuk menjaga konteks.
+                ${state.user.isVip ? "User ini adalah VIP, layani dengan sangat spesial." : ""}`;
+            }
+
+            // Personality Override
+            if (state.user.personality === 'short') {
+                systemPrompt += " Jawabanmu harus singkat dan to the point.";
+            } else if (state.user.personality === 'toxic') {
+                const words = state.user.language === 'id' ? toxicWords.id : (state.user.language === 'su' ? toxicWords.su : toxicWords.jw);
+                systemPrompt += ` Gunakan gaya bahasa yang sangat kasar, toxic, dan nyeleneh seperti teman akrab yang sedang emosi. Gunakan kata-kata seperti: ${words.join(", ")}.`;
+            } else if (state.user.personality === 'formal') {
+                systemPrompt += " Gunakan bahasa yang lebih formal dan sopan.";
+            }
+
+            // Language Override
+            if (state.user.language === 'id') systemPrompt += " WAJIB Gunakan Bahasa Indonesia.";
+            if (state.user.language === 'su') systemPrompt += " WAJIB Gunakan Bahasa Sunda.";
+            if (state.user.language === 'jw') systemPrompt += " WAJIB Gunakan Bahasa Jawa.";
+
+            // 4. Construct Payload
+            let historyContext = state.activeSessionMessages.slice(-10);
+            let currentParts = [{ text: systemPrompt + "\n\nUser: " + prompt }];
+            
+            if (fileData && fileData.type.startsWith('image/')) {
+                currentParts.push({
+                    inline_data: {
+                        mime_type: fileData.type,
+                        data: fileData.data.split(',')[1]
+                    }
                 });
             } else if (fileData) {
-                payload.contents[0].parts[0].text += `\n[Lampiran File: ${fileData.name}, Isi: ${fileData.content}]`;
+                 currentParts[0].text += `\n\n[File: ${fileData.name}]\nContent: ${fileData.rawContent || "Binary file"}`;
             }
 
-            try {
-                // Fetch with Retry & Timeout Logic
-                const aiText = await fetchWithRetry(payload);
-                removeLoadingBubble();
+            const contents = [
+                ...historyContext,
+                { role: 'user', parts: currentParts }
+            ];
 
-                if (targetMsgKey) {
-                    // Update existing AI message (Regenerate)
-                    db.ref(`chats/${currentChatId}/messages/${targetMsgKey}`).update({
-                        text: aiText,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                } else {
-                    // New AI Message
-                    db.ref(`chats/${currentChatId}/messages`).push({
-                        sender: 'ai',
-                        text: aiText,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }
-
-            } catch (error) {
-                removeLoadingBubble();
-                console.error(error);
-                // Error Handling "System Busy"
-                db.ref(`chats/${currentChatId}/messages`).push({
-                    sender: 'ai',
-                    text: "**[SISTEM]** Ai sedang sibuk atau koneksi API bermasalah. Mungkin butuh waktu pemulihan. Tunggu sebentar ya. \n\n_Salam, APBOT by Aptech Team_",
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-            }
-        }
-
-        function buildSystemPrompt() {
-            let prompt = `Kamu adalah AP-CHATBOT (Model: ${currentModel}), AI cerdas buatan AryaProject (Wates Team, Mojokerto).`;
-            
-            // Language Logic
-            if (userSettings.language === 'id') prompt += " GUNAKAN BAHASA INDONESIA YANG BENAR. Jangan gunakan bahasa daerah kecuali diminta.";
-            else if (userSettings.language === 'jw') prompt += " GUNAKAN BASA JOWO (Jawa Timuran) sing akrab.";
-            else if (userSettings.language === 'su') prompt += " GUNAKAN BASA SUNDA yang akrab.";
-
-            // Personality Logic
-            if (userSettings.personality === 'toxic') {
-                prompt += " MODE TOXIC AKTIF: Gunakan bahasa yang sangat kasar, bar-bar, dan nyeleneh layaknya teman tongkrongan emosi.";
-                if (userSettings.language === 'jw') prompt += " Gunakan kata pisuhan khas Jawa: Jancok, Asu, Matamu, Gatel, Ndasmu.";
-                if (userSettings.language === 'su') prompt += " Gunakan kata kasar Sunda: Anying, Goblog, Sia, Belegug.";
-            } else if (userSettings.personality === 'formal') {
-                prompt += " Gunakan bahasa yang sangat formal, sopan, dan akademis.";
-            }
-
-            // Model Specific
-            if (currentModel === 'AP-EDU') {
-                prompt += " Kamu adalah AP-EDU. JAWABLAH SOAL DALAM FORMAT TABEL MARKDOWN. Buat kolom No, Soal/Topik, Jawaban, dan Penjelasan. Akhiri dengan motivasi belajar.";
-            } else if (currentModel === 'CARE-X') {
-                prompt += " Kamu adalah CARE-X. Jadilah pacar/teman curhat yang perhatian, manis, dan suportif.";
-            }
-
-            return prompt;
-        }
-
-        // API Retry & Timeout Wrapper
-        async function fetchWithRetry(payload, retries = 3) {
-            const timeout = 180000; // 3 menit
-            
-            const fetchPromise = async () => {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.error) throw new Error(data.error.message);
-                return data.candidates[0].content.parts[0].text;
+            const payload = {
+                contents: contents
             };
 
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error("Timeout")), timeout)
-            );
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-            for (let i = 0; i < retries; i++) {
-                try {
-                    return await Promise.race([fetchPromise(), timeoutPromise]);
-                } catch (err) {
-                    if (i === retries - 1) throw err;
-                    console.log(`Retrying API... (${i+1})`);
-                    await new Promise(r => setTimeout(r, 2000)); // Wait 2s before retry
-                }
-            }
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
+            return data.candidates[0].content.parts[0].text;
         }
 
-        // ================= EDIT & REGENERATE =================
-        
-        function enableEdit(key, currentText) {
-            // Fix unescape
-            const rawText = unescapeHtml(currentText);
-            const container = document.querySelector(`#msg-${key} .message-user`);
-            const contentDiv = document.getElementById(`content-${key}`);
-            
-            // Create Editor
-            const input = document.createElement('textarea');
-            input.value = rawText;
-            input.className = "w-full bg-black/20 text-white border border-white/20 rounded p-2 focus:outline-none h-auto resize-none";
-            input.style.minHeight = "60px";
-            
-            const btnSave = document.createElement('button');
-            btnSave.innerHTML = '<i class="fa-solid fa-check"></i> Save';
-            btnSave.className = "mt-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded text-xs font-bold";
-            btnSave.onclick = () => saveEdit(key, input.value);
+        // ================= UI RENDERING =================
 
-            const btnCancel = document.createElement('button');
-            btnCancel.innerHTML = '<i class="fa-solid fa-times"></i>';
-            btnCancel.className = "mt-2 ml-2 text-gray-300 hover:text-white px-2 py-1 text-xs";
-            btnCancel.onclick = () => {
-                // Force re-render from DB to cancel
-                db.ref(`chats/${currentChatId}/messages/${key}`).once('value', snap => renderMessage(snap.val()));
-                // Reload chat basically to reset UI state
-                openChat(currentChatId);
+        function addMessageToUI(sender, text, attachment = null, msgId = null) {
+            const area = document.getElementById('messages-area');
+            const isUser = sender === 'user';
+            const safeMsgId = msgId || Date.now();
+            
+            const formattedText = isUser ? text : marked.parse(text);
+
+            let attachmentHtml = '';
+            if (attachment) {
+                if (attachment.type.startsWith('image/')) {
+                    attachmentHtml = `<div class="mb-2"><img src="${attachment.data}" class="max-w-[200px] rounded-lg border border-white/20"></div>`;
+                } else {
+                    attachmentHtml = `<div class="mb-2 p-2 bg-white/10 rounded flex items-center gap-2 text-xs"><i class="fa-solid fa-file"></i> ${attachment.name}</div>`;
+                }
+            }
+
+            const html = `
+                <div class="flex ${isUser ? 'justify-end' : 'justify-start'} gap-3 animate-fade-in-up message-container" id="msg-container-${safeMsgId}" data-id="${safeMsgId}">
+                    ${!isUser ? `<div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-robot text-xs text-white"></i></div>` : ''}
+                    
+                    <div class="flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[85%] md:max-w-[75%]">
+                        ${isUser ? `<div class="text-[10px] text-gray-400 mb-1 mr-1">${state.user.name}</div>` : 
+                        `<div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs font-bold text-indigo-300">AP-CHATBOT</span>
+                            ${!isUser ? `<button onclick="regenerateMessage(${safeMsgId})" class="text-[10px] text-gray-500 hover:text-indigo-400 ml-2"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>` : ''}
+                        </div>`}
+                        
+                        <div class="${isUser ? 'message-user text-white' : 'message-ai text-gray-200'} p-4 rounded-2xl ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm md:text-base leading-relaxed shadow-lg w-full prose prose-invert max-w-none relative group">
+                            ${attachmentHtml}
+                            <div class="msg-content">${formattedText}</div>
+                            
+                            ${isUser ? `
+                            <div class="message-actions absolute -bottom-6 right-0 bg-black/50 rounded px-2 py-1">
+                                <button onclick="startEditing(${safeMsgId})" class="text-xs text-gray-300 hover:text-white px-1"><i class="fa-solid fa-pen"></i> Edit</button>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    ${isUser ? `<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 border border-white/10 text-xs font-bold">${state.user.name.charAt(0)}</div>` : ''}
+                </div>
+            `;
+            
+            area.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+            if (!isUser) addCopyListeners();
+        }
+
+        function startEditing(msgId) {
+            const container = document.getElementById(`msg-container-${msgId}`);
+            const contentDiv = container.querySelector('.msg-content');
+            const originalText = contentDiv.innerText; 
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'edit-textarea w-full bg-black/30 text-white border border-white/20 rounded p-2 text-sm focus:outline-none focus:border-indigo-500';
+            textarea.value = originalText;
+            textarea.rows = 3;
+            
+            const saveBtn = document.createElement('button');
+            saveBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            saveBtn.className = 'absolute -right-8 top-0 bg-green-600 p-2 rounded-full text-white text-xs hover:bg-green-500';
+            saveBtn.onclick = () => finishEditing(msgId, textarea.value);
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            cancelBtn.className = 'absolute -right-8 top-8 bg-red-600 p-2 rounded-full text-white text-xs hover:bg-red-500';
+            cancelBtn.onclick = () => {
+                contentDiv.innerHTML = originalText; 
+                container.querySelector('.message-actions').style.display = 'flex';
             };
 
             contentDiv.innerHTML = '';
-            contentDiv.appendChild(input);
-            contentDiv.appendChild(btnSave);
-            contentDiv.appendChild(btnCancel);
-            input.focus();
+            contentDiv.appendChild(textarea);
+            contentDiv.appendChild(saveBtn);
+            contentDiv.appendChild(cancelBtn);
+            container.querySelector('.message-actions').style.display = 'none';
+            textarea.focus();
         }
 
-        async function saveEdit(key, newText) {
-            // 1. Update DB for User Message
-            await db.ref(`chats/${currentChatId}/messages/${key}`).update({
-                text: newText
-            });
-
-            // 2. Find Next AI Message to Regenerate
-            // Get all messages
-            const snapshot = await db.ref(`chats/${currentChatId}/messages`).orderByKey().startAfter(key).limitToFirst(1).get();
-            let nextAiKey = null;
-            snapshot.forEach(child => {
-                if(child.val().sender === 'ai') nextAiKey = child.key;
-            });
-
-            // 3. Trigger AI Logic
-            if(nextAiKey) {
-                processAIResponse(newText, null, nextAiKey);
-            } else {
-                processAIResponse(newText, null); // If no answer yet, create new
-            }
-        }
-
-        async function regenerateResponse(msgKey) {
-            // Find previous user message
-            // Note: Ideally we scan backwards, but for simplicity, we just fetch last user prompt context or ask user to re-type if context lost. 
-            // Better approach: Just call processAI with last context.
+        async function finishEditing(msgId, newText) {
+            const container = document.getElementById(`msg-container-${msgId}`);
+            const contentDiv = container.querySelector('.msg-content');
             
-            // Show loading on that specific bubble? Or remove and re-add.
-            // Let's remove the old AI message and create a new one for "Regenerate" visual effect
-            const prevMsgRef = db.ref(`chats/${currentChatId}/messages`).orderByKey().endBefore(msgKey).limitToLast(1);
-            const snap = await prevMsgRef.get();
-            let lastUserText = "";
-            snap.forEach(c => lastUserText = c.val().text);
+            contentDiv.innerHTML = newText;
+            container.querySelector('.message-actions').style.display = 'flex';
 
-            if(lastUserText) {
-                db.ref(`chats/${currentChatId}/messages/${msgKey}`).remove(); // Remove old answer
-                processAIResponse(lastUserText, null); // Gen new
+            const chat = state.chatHistory.find(c => c.id === state.currentChatId);
+            if (chat) {
+                const msgIdx = chat.messages.findIndex(m => m.id === msgId);
+                if(msgIdx !== -1) {
+                    chat.messages[msgIdx].text = newText;
+                    chat.messages = chat.messages.slice(0, msgIdx + 1);
+                    state.chatHistory = state.chatHistory.map(c => c.id === chat.id ? chat : c);
+                    saveState();
+                    
+                    state.activeSessionMessages = []; 
+                }
             }
-        }
 
-        // ================= UTILS =================
-        function handleEnter(e) {
-            if(e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+            let nextElem = container.nextElementSibling;
+            while(nextElem) {
+                nextElem.remove();
+                nextElem = container.nextElementSibling;
             }
-            // Auto height
-            e.target.style.height = 'auto';
-            e.target.style.height = e.target.scrollHeight + 'px';
-        }
 
-        function scrollToBottom() {
-            const c = document.getElementById('chat-container');
-            c.scrollTop = c.scrollHeight;
+            addLoadingBubble();
+            try {
+                state.activeSessionMessages.push({role: 'user', parts: [{text: newText}]});
+                
+                const responseText = await callGeminiAPI(newText, null);
+                removeLoadingBubble();
+                
+                const aiMsgId = Date.now();
+                typeWriterEffect(responseText, aiMsgId);
+                state.activeSessionMessages.push({role: 'model', parts: [{text: responseText}]});
+                
+                if(chat) {
+                    chat.messages.push({ sender: 'ai', text: responseText, id: aiMsgId });
+                    saveState();
+                }
+            } catch (e) {
+                removeLoadingBubble();
+                addMessageToUI('ai', "Error generating response after edit.");
+            }
         }
 
         function addLoadingBubble() {
             const area = document.getElementById('messages-area');
-            const div = document.createElement('div');
-            div.id = 'loading-bubble';
-            div.className = 'flex gap-3 animate-fade-in';
-            div.innerHTML = `
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center"><i class="fa-solid fa-robot text-xs text-white"></i></div>
-                <div class="message-ai p-4 rounded-2xl rounded-tl-sm flex items-center gap-2">
-                    <span class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></span>
-                    <span class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-75"></span>
-                    <span class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150"></span>
+            const html = `
+                <div id="loading-bubble" class="flex gap-3 animate-fade-in-up">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs text-white"></i></div>
+                    <div class="message-ai p-4 rounded-2xl rounded-tl-sm flex items-center gap-2">
+                        <span class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></span>
+                        <span class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-75"></span>
+                        <span class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150"></span>
+                    </div>
                 </div>
             `;
-            area.appendChild(div);
+            area.insertAdjacentHTML('beforeend', html);
             scrollToBottom();
         }
 
         function removeLoadingBubble() {
-            const b = document.getElementById('loading-bubble');
-            if(b) b.remove();
+            const bubble = document.getElementById('loading-bubble');
+            if (bubble) bubble.remove();
         }
 
-        // File Handling
+        function typeWriterEffect(text, msgId) {
+            const area = document.getElementById('messages-area');
+            const html = `
+                <div class="flex gap-3 animate-fade-in-up message-container" data-id="${msgId}">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-robot text-xs text-white"></i></div>
+                    <div class="flex flex-col max-w-[85%] md:max-w-[75%]">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs font-bold text-indigo-300">AP-CHATBOT</span>
+                            <button onclick="regenerateMessage(${msgId})" class="text-[10px] text-gray-500 hover:text-indigo-400 ml-2"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>
+                        </div>
+                        <div id="ai-content-${msgId}" class="message-ai p-4 rounded-2xl rounded-tl-sm text-gray-200 text-sm md:text-base leading-relaxed shadow-lg prose prose-invert max-w-none">
+                        </div>
+                    </div>
+                </div>
+            `;
+            area.insertAdjacentHTML('beforeend', html);
+            
+            document.getElementById(`ai-content-${msgId}`).innerHTML = marked.parse(text);
+            addCopyListeners();
+            saveMessageToHistory('ai', text, null, msgId);
+            scrollToBottom();
+        }
+
+        // ================= UTILITIES & STORAGE =================
+
+        function scrollToBottom() {
+            const container = document.getElementById('chat-container');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function setInput(text) {
+            document.getElementById('chat-input').value = text;
+        }
+
+        function addCopyListeners() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                const pre = block.parentNode;
+                if (!pre.querySelector('.copy-btn')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'copy-btn';
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin';
+                    btn.onclick = () => {
+                        navigator.clipboard.writeText(block.innerText);
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Disalin!';
+                        setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin', 2000);
+                    };
+                    pre.appendChild(btn);
+                }
+            });
+        }
+
         function handleFileSelect(input) {
             const file = input.files[0];
-            if(!file) return;
-            
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = (e) => {
-                currentFile = {
+                state.currentFile = {
                     name: file.name,
                     type: file.type,
-                    base64: e.target.result.split(',')[1],
-                    content: file.type.includes('text') ? atob(e.target.result.split(',')[1]) : "Binary Data"
+                    data: e.target.result,
+                    rawContent: file.type.includes('text') ? atob(e.target.result.split(',')[1]) : null
                 };
                 document.getElementById('file-preview').classList.remove('hidden');
                 document.getElementById('file-preview').classList.add('inline-flex');
@@ -922,63 +1042,215 @@
         }
 
         function clearFile() {
-            currentFile = null;
+            state.currentFile = null;
             document.getElementById('file-input').value = '';
             document.getElementById('file-preview').classList.add('hidden');
             document.getElementById('file-preview').classList.remove('inline-flex');
         }
 
-        // Settings & Modals
+        // Modal Handlers
         function openModelModal() { document.getElementById('model-modal').classList.remove('hidden'); }
-        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        function selectModel(m) {
-            currentModel = m;
-            document.getElementById('current-model-text').innerText = m;
-            document.getElementById('mobile-model-text').innerText = m;
-            closeModal('model-modal');
-        }
-
-        function saveSettings() {
-            userSettings.language = document.getElementById('language-select').value;
-            userSettings.personality = document.getElementById('personality-select').value;
+        function closeModelModal() { document.getElementById('model-modal').classList.add('hidden'); }
+        
+        function selectModel(model) {
+            state.currentModel = model;
+            document.getElementById('current-model-text').textContent = model;
+            document.getElementById('mobile-model-text').textContent = model;
             
-            db.ref(`users/${currentUser.uid}/settings`).set(userSettings);
-            closeModal('settings-modal');
-            alert("Pengaturan tersimpan! AI akan menyesuaikan.");
+            closeModelModal();
+            if (model === 'AP-EDU') setTimeout(openEduModal, 300);
+            else if (model === 'CARE-X') setTimeout(openCareModal, 300);
+            state.currentSubject = null;
+            state.currentCareMode = null;
         }
 
-        function copyText(btn) {
-            const text = btn.closest('.message-ai').querySelector('.prose').innerText;
-            navigator.clipboard.writeText(text);
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Disalin';
-            setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin', 2000);
+        function openEduModal() { document.getElementById('edu-modal').classList.remove('hidden'); }
+        function closeEduModal() { document.getElementById('edu-modal').classList.add('hidden'); }
+        function selectSubject(s) { state.currentSubject = s; closeEduModal(); showNotification(`Mode EDU: ${s} Aktif`); }
+
+        function openCareModal() { document.getElementById('care-modal').classList.remove('hidden'); }
+        function closeCareModal() { document.getElementById('care-modal').classList.add('hidden'); }
+        function selectCareMode(m) { state.currentCareMode = m; closeCareModal(); showNotification(`Mode CARE: ${m} Aktif`); }
+
+        // Settings & Storage
+        function loadState() {
+            const savedUser = localStorage.getItem('apbot_user_v4');
+            const savedHistory = localStorage.getItem('apbot_history_v4');
+            if (savedUser) state.user = JSON.parse(savedUser);
+            if (savedHistory) state.chatHistory = JSON.parse(savedHistory);
+            
+            document.getElementById('profile-name').value = state.user.name;
+            document.getElementById('language-select').value = state.user.language;
+            document.getElementById('personality-select').value = state.user.personality;
+        }
+
+        function saveState() {
+            localStorage.setItem('apbot_user_v4', JSON.stringify(state.user));
+            localStorage.setItem('apbot_history_v4', JSON.stringify(state.chatHistory));
+        }
+
+        function updateUIProfile() {
+            document.getElementById('username-input').value = state.user.name;
+            document.getElementById('user-initial').innerText = state.user.name.charAt(0);
+            if (state.user.isVip) {
+                document.getElementById('vip-badge').classList.remove('hidden');
+                document.getElementById('user-status').innerText = "VIP Account";
+                document.getElementById('user-status').classList.add('text-yellow-400');
+                // CUSTOM VIP DISPLAY AS REQUESTED
+                document.getElementById('upgrade-container').innerHTML = `<div class="text-center text-[10px] text-yellow-500 font-bold border border-yellow-500/30 bg-yellow-500/10 rounded p-1">VIP AKTIF</div>`;
+            }
+        }
+
+        function updateUsername(n) { state.user.name = n; saveState(); updateUIProfile(); }
+        function upgradeToVip() { state.user.isVip = true; saveState(); updateUIProfile(); alert("Selamat! Anda sekarang VIP."); }
+
+        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
+        
+        function saveSettings() {
+            state.user.name = document.getElementById('profile-name').value;
+            state.user.language = document.getElementById('language-select').value;
+            state.user.personality = document.getElementById('personality-select').value;
+            saveState(); updateUIProfile(); closeSettingsModal();
+            showNotification('Pengaturan Tersimpan!');
+        }
+
+        // History
+        function createNewChatSession(firstMsg) {
+            state.currentChatId = Date.now();
+            state.activeSessionMessages = []; 
+            const title = firstMsg.length > 20 ? firstMsg.substring(0, 20) + '...' : firstMsg;
+            state.chatHistory.unshift({
+                id: state.currentChatId,
+                title: title,
+                timestamp: new Date().toISOString(),
+                messages: []
+            });
+            saveState(); renderHistory();
+        }
+
+        function saveMessageToHistory(sender, text, filename, msgId) {
+            if (!state.currentChatId) return;
+            const chat = state.chatHistory.find(c => c.id === state.currentChatId);
+            if (chat) {
+                chat.messages.push({ sender, text, filename, id: msgId });
+                saveState();
+            }
+        }
+
+        // CUSTOM NAME CHAT FEATURE
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            state.chatHistory.forEach(chat => {
+                const div = document.createElement('div');
+                div.className = 'group flex items-center gap-2 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors relative';
+                div.onclick = () => loadChatSession(chat.id);
+                
+                // Added Edit Title Input
+                div.innerHTML = `
+                    <i class="fa-regular fa-message text-gray-500 group-hover:text-gray-300"></i>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-medium truncate text-gray-400 group-hover:text-gray-200" id="title-${chat.id}">${chat.title}</p>
+                        <input type="text" value="${chat.title}" class="hidden w-full bg-black border border-indigo-500 text-xs p-1 rounded text-white" id="edit-${chat.id}" onclick="event.stopPropagation()" onchange="saveTitle(${chat.id}, this.value)">
+                    </div>
+                    <div class="hidden group-hover:flex gap-2 absolute right-2 bg-[#1a1a26] px-1 rounded">
+                        <button onclick="event.stopPropagation(); toggleEditTitle(${chat.id})" class="text-gray-400 hover:text-blue-400"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); deleteChat(${chat.id})" class="text-gray-400 hover:text-red-400"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        
+        function toggleEditTitle(id) {
+            const p = document.getElementById(`title-${id}`);
+            const input = document.getElementById(`edit-${id}`);
+            if (input.classList.contains('hidden')) {
+                p.classList.add('hidden');
+                input.classList.remove('hidden');
+                input.focus();
+            } else {
+                p.classList.remove('hidden');
+                input.classList.add('hidden');
+            }
+        }
+
+        function saveTitle(id, newTitle) {
+            const chat = state.chatHistory.find(c => c.id === id);
+            if (chat) {
+                chat.title = newTitle;
+                saveState();
+                renderHistory();
+            }
+        }
+
+        function loadChatSession(id) {
+            state.currentChatId = id;
+            const chat = state.chatHistory.find(c => c.id === id);
+            if (!chat) return;
+
+            state.activeSessionMessages = chat.messages.map(m => ({
+                role: m.sender === 'user' ? 'user' : 'model',
+                parts: [{ text: m.text }]
+            }));
+
+            document.getElementById('welcome-screen').style.display = 'none';
+            const area = document.getElementById('messages-area');
+            area.classList.remove('hidden');
+            area.innerHTML = '';
+            
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+
+            chat.messages.forEach(msg => {
+                addMessageToUI(msg.sender, msg.text, msg.filename ? {name: msg.filename, type: 'file'} : null, msg.id);
+            });
+        }
+
+        function deleteChat(id) {
+            if(confirm("Hapus chat ini?")) {
+                state.chatHistory = state.chatHistory.filter(c => c.id !== id);
+                if(state.currentChatId === id) startNewChat();
+                saveState(); renderHistory();
+            }
+        }
+
+        function startNewChat() {
+            state.currentChatId = null;
+            state.activeSessionMessages = [];
+            document.getElementById('messages-area').innerHTML = '';
+            document.getElementById('messages-area').classList.add('hidden');
+            document.getElementById('welcome-screen').style.display = 'flex';
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
         }
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebar-overlay');
-            sb.classList.toggle('-translate-x-full');
-            ov.classList.toggle('hidden');
+            if (sb.classList.contains('-translate-x-full')) {
+                sb.classList.remove('-translate-x-full'); ov.classList.remove('hidden');
+            } else {
+                sb.classList.add('-translate-x-full'); ov.classList.add('hidden');
+            }
         }
 
-        // HTML Escape helper for edit input
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-        
-        function unescapeHtml(text) {
-            const txt = document.createElement("textarea");
-            txt.innerHTML = text;
-            return txt.value;
+        function showNotification(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-white text-sm z-[60] animate-fade-in-up ${type === 'success' ? 'bg-green-600' : 'bg-indigo-600'}`;
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
         }
 
+        // Setup Animation helper
+        const styleSheet = document.createElement("style");
+        styleSheet.textContent = `
+            @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+        `;
+        document.head.appendChild(styleSheet);
     </script>
 </body>
 </html>
