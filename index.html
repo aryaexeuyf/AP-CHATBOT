@@ -562,7 +562,8 @@
 
     <script>
         // ================= CONFIGURATION & FIREBASE =================
-        const API_KEY = 'AIzaSyACPEXjzZ1LD30KbLj9tg8eecwWSHNIzlI'; // Generated/User Key
+        // API Key sudah di-update sesuai permintaan pengguna
+        const API_KEY = 'AIzaSyACPEXjzZ1LD30KbLj9tg8eecwWSHNIzlI'; 
         const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY;
 
         // Firebase Configuration (From User Input)
@@ -751,6 +752,7 @@
                     }
                  });
             } else if (state.currentFile) {
+                 // For non-image files, append content to text part
                  userMessageContext.parts[0].text += `\n\n[File: ${state.currentFile.name}]\nContent: ${state.currentFile.rawContent || "Binary file"}`;
             }
 
@@ -890,28 +892,17 @@
         async function callGeminiAPI(prompt) {
             const systemInstruction = getSystemInstruction();
             
-            // History only contains user and model messages, already built in sendMessage
             let historyContext = state.activeSessionMessages; 
             
-            // The last message is the current user message, which already includes file data if any.
-            // We strip off the last element from history for the 'contents' array construction.
             const contents = historyContext.map(m => ({
                 role: m.role,
                 parts: m.parts // Keep all parts (text/image)
             }));
             
-            // Remove the current (last) user message from history, as it's the one we're processing now.
-            // We use contents array for API call as it's stable.
-            // However, the `activeSessionMessages` must contain the current user message for continuity.
-            // The Gemini API handles the system instruction separately, and the contents array includes history + current message.
-            
-            // To ensure the contents array is correctly built:
-            // The last element in activeSessionMessages IS the current user message.
-            // We will use all of activeSessionMessages as contents.
-
+            // FIX JSON PAYLOAD STRUCTURE HERE:
             const payload = {
                 contents: contents,
-                config: {
+                generationConfig: { // <--- CORRECT NAME (generationConfig)
                     systemInstruction: systemInstruction,
                 }
             };
@@ -1049,9 +1040,9 @@
 
             let attachmentHtml = '';
             if (attachment) {
-                if (attachment.type.startsWith('image/')) {
+                if (attachment.type && attachment.type.startsWith('image/')) {
                     attachmentHtml = `<div class="mb-2"><img src="${attachment.data}" class="max-w-[200px] rounded-lg border border-white/20"></div>`;
-                } else {
+                } else if (attachment.name) {
                     attachmentHtml = `<div class="mb-2 p-2 bg-white/10 rounded flex items-center gap-2 text-xs"><i class="fa-solid fa-file"></i> ${attachment.name}</div>`;
                 }
             }
