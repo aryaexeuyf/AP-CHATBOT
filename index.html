@@ -2,1448 +2,223 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AP-CHATBOT AI - Wates Team (Revisi Realistis)</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        'glass': 'rgba(255, 255, 255, 0.05)',
-                        'glass-border': 'rgba(255, 255, 255, 0.1)',
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebak Angka ala APBOT</title>
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
-
-        /* Background Animation */
-        .animated-bg {
-            background: radial-gradient(circle at 50% 50%, #0f0f1a 0%, #000000 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .orb-1 { width: 300px; height: 300px; background: #4f46e5; top: -50px; left: -50px; animation: float 8s infinite; }
-        .orb-2 { width: 400px; height: 400px; background: #7c3aed; bottom: -100px; right: -100px; animation: float 10s infinite reverse; }
-        
-        /* Glass Classes */
-        .glass-panel {
-            background: rgba(20, 20, 30, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Typography & Elements */
-        .message-user {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-        .message-ai {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Code Block Styling - MODIFIED FOR BETTER COPY BUTTON PLACEMENT */
-        pre {
-            background: #1e1e1e !important;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            position: relative;
-            overflow-x: auto;
-            border: 1px solid #333;
-        }
-        code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #aaa;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 0.3rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .copy-btn:hover {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        /* New: Only show copy button on direct PRE children of .msg-content */
-        .msg-content > pre { margin-top: 1rem; }
-
-
-        /* Loading Screen */
-        #loading-screen { transition: opacity 0.8s ease-out, visibility 0.8s; }
-        .loaded #loading-screen { opacity: 0; visibility: hidden; }
-        #main-ui { opacity: 0; transform: scale(0.98); transition: opacity 1s ease-out, transform 1s ease-out; }
-        .loaded #main-ui { opacity: 1; transform: scale(1); }
-
-        /* Markdown Content Styling */
-        .prose strong { color: #e2e8f0; font-weight: 700; }
-        .prose p { margin-bottom: 0.5rem; }
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-        
-        /* Table Styling (Kept but AI is instructed NOT to use by default) */
-        .answer-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0.5rem;
-            overflow: hidden;
-            font-size: 0.9rem;
-        }
-        .answer-table th, .answer-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            vertical-align: top;
-        }
-        .answer-table th {
-            background: rgba(99, 102, 241, 0.3);
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.05em;
-        }
-        .answer-table tr:last-child td {
-            border-bottom: none;
-        }
-        .answer-table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        /* Model Selector Styling */
-        .model-selector {
+        /* Styling CSS-nya nih, Slur! Biar cakep dikit */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 2rem;
-            padding: 0.25rem 0.75rem;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border-top: 5px solid #007bff; /* Warna khas AryaProject gitu, Slur! */
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            background-color: #28a745; /* Warna hijau biar semangat! */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin: 5px;
         }
-        .model-selector:hover {
-            background: rgba(255, 255, 255, 0.1);
+
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
         }
-        
-        /* Action Buttons on Message (Edit & Regenerate) */
-        .message-actions {
-            opacity: 0;
-            transition: opacity 0.2s;
-            display: flex;
-            gap: 0.5rem;
+
+        button:active {
+            transform: translateY(0);
         }
-        .message-container:hover .message-actions {
-            opacity: 1;
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
         }
-        
-        /* Mobile Responsive Improvements */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 85vw !important;
-                max-width: 320px;
-            }
-            .history-list {
-                max-height: 40vh !important;
-                overflow-y: auto;
-            }
-            /* Fix textarea edit mode on mobile */
-            .edit-textarea {
-                font-size: 16px; /* Prevent zoom */
-            }
+
+        #resetButton {
+            background-color: #ffc107; /* Kuning buat reset */
+            color: #333;
+        }
+        #resetButton:hover {
+            background-color: #e0a800;
+        }
+
+        #message {
+            margin-top: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            min-height: 30px; /* Biar gak goyang layoutnya */
+        }
+
+        #attemptsLeft {
+            margin-top: 15px;
+            font-size: 1em;
+            color: #666;
+        }
+
+        .apbot-footer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #888;
+        }
+        .apbot-footer span {
+            font-weight: bold;
+            color: #007bff;
         }
     </style>
 </head>
-<body class="bg-black text-white h-screen overflow-hidden antialiased selection:bg-indigo-500 selection:text-white">
+<body>
 
-    <div id="auth-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[110] flex flex-col items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-8 w-full max-w-sm text-center shadow-[0_0_50px_rgba(99,102,241,0.5)]">
-            <div class="mx-auto w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
-                <i class="fa-solid fa-lock text-3xl text-white"></i>
-            </div>
-            <h2 class="text-2xl font-display font-bold mb-2">Login dhisik, Slur!</h2>
-            <p class="text-gray-400 mb-6 text-sm">Masuk untuk mengakses AP-CHATBOT V4.6</p>
-            
-            <button onclick="loginWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white text-black font-semibold hover:bg-gray-200 transition mb-3 flex items-center justify-center gap-3">
-                <i class="fa-brands fa-google text-lg"></i>
-                Masuk dengan Google
-            </button>
-            
-            <div class="flex items-center my-4">
-                <div class="flex-grow border-t border-gray-700"></div>
-                <span class="flex-shrink mx-4 text-gray-500 text-xs">ATAU</span>
-                <div class="flex-grow border-t border-gray-700"></div>
-            </div>
+    <div class="container">
+        <h1>Tebak Angka APBOT!</h1>
+        <p>APBOT sudah mikirin angka rahasia antara <strong>1 sampai 100</strong>, Slur.</p>
+        <p>Coba tebak, angka berapa hayooo?</p>
 
-            <input type="email" id="login-email" placeholder="Email" class="w-full p-3 mb-3 rounded-lg bg-white/10 border border-white/10 focus:border-indigo-500 focus:outline-none text-white text-sm">
-            <input type="password" id="login-password" placeholder="Password" class="w-full p-3 mb-4 rounded-lg bg-white/10 border border-white/10 focus:border-indigo-500 focus:outline-none text-white text-sm">
-            
-            <button onclick="loginWithEmail()" class="w-full py-3 px-4 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition">
-                Masuk / Daftar
-            </button>
-            <p id="auth-error" class="text-red-400 text-xs mt-3 hidden"></p>
-        </div>
-    </div>
+        <input type="number" id="guessInput" placeholder="Masukkan tebakanmu...">
+        <button id="checkButton">Tebak Angka!</button>
+        <button id="resetButton" style="display: none;">Mulai Ulang!</button>
 
+        <p id="message"></p>
+        <p id="attemptsLeft">Sisa percobaan: <span id="remainingCount">10</span></p>
 
-    <div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black">
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600 rounded-full blur-[120px] opacity-20 animate-pulse-slow"></div>
-        </div>
-        <div class="relative z-10 text-center space-y-6">
-            <div class="mx-auto w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.5)] animate-bounce">
-                <i class="fa-solid fa-robot text-4xl text-white"></i>
-            </div>
-            <div class="space-y-2">
-                <h1 class="font-display text-4xl md:text-5xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400">
-                    AP-CHATBOT
-                </h1>
-                <p class="text-indigo-400 font-medium tracking-[0.3em] text-sm uppercase animate-pulse">
-                    by Wates Team
-                </p>
-            </div>
-            <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden mt-8 mx-auto relative">
-                <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-0 transition-all ease-linear"></div>
-            </div>
-            <p class="text-xs text-gray-500 mt-4">Memuat Sistem Cerdas...</p>
-        </div>
-    </div>
-
-    <div id="main-ui" class="h-full w-full flex animated-bg relative z-0">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 transform -translate-x-full md:translate-x-0 md:static md:flex flex-col glass-panel transition-transform duration-300 ease-in-out h-full border-r border-white/10">
-            
-            <div class="p-5 border-b border-white/10">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-robot text-white text-lg"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-display font-bold text-lg tracking-wide">AP-CHATBOT</h2>
-                        <div id="version-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium inline-block">V 4.6 REALISTIS</div>
-                    </div>
-                    <button onclick="toggleSidebar()" class="md:hidden ml-auto text-gray-400 hover:text-white">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold relative">
-                        <span id="user-initial">U</span>
-                        <div id="vip-badge" class="hidden absolute -bottom-1 -right-1 bg-yellow-500 text-black text-[8px] px-1 rounded font-bold border border-black">VIP</div>
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                        <input type="text" id="username-input" value="User Free" class="bg-transparent text-sm font-bold text-white w-full focus:outline-none focus:border-b border-indigo-500" onchange="updateUsername(this.value)">
-                        <p id="user-status" class="text-xs text-gray-400">Free Account</p>
-                    </div>
-                    <button onclick="openSettings()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-gear"></i></button>
-                    <button onclick="logoutUser()" class="text-red-400 hover:text-red-300 ml-1" title="Logout"><i class="fa-solid fa-sign-out-alt"></i></button>
-                </div>
-
-                <div id="upgrade-container" class="mt-3">
-                    <button onclick="upgradeToVip()" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-yellow-600/20 to-yellow-500/20 border border-yellow-500/30 text-yellow-200 text-xs font-medium hover:bg-yellow-500/30 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-crown"></i> Upgrade ke VIP (Rp 0)
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-4">
-                <button onclick="startNewChat()" class="w-full py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                    <i class="fa-solid fa-plus text-indigo-400"></i>
-                    <span class="font-medium text-sm">Obrolan Baru</span>
-                </button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-3 space-y-2 history-list" id="history-list">
-                </div>
-
-            <div class="p-4 border-t border-white/10 bg-black/20">
-                <div class="text-[10px] text-gray-400 leading-relaxed">
-                    <strong class="text-gray-300 block mb-1">Info AI:</strong>
-                    AI ini dibuat untuk tujuan edukasi dan membantu publik. 
-                    Dibuat oleh <span class="text-indigo-400">APTECH</span> feat. <span class="text-purple-400">AryaProject</span> & <span class="text-indigo-400">Wates Team</span>.
-                </div>
-            </div>
-        </aside>
-
-        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden md:hidden"></div>
-
-        <main class="flex-1 flex flex-col h-full relative w-full">
-            
-            <header class="md:hidden flex items-center justify-between p-4 glass-panel z-20 border-b border-white/10">
-                <button onclick="toggleSidebar()" class="text-white p-2"><i class="fa-solid fa-bars text-xl"></i></button>
-                <div class="flex items-center gap-2">
-                     <span class="font-display font-bold">AP-CHATBOT</span>
-                     <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded">REALISTIS</span>
-                </div>
-                <div class="w-8"></div>
-            </header>
-
-            <header class="hidden md:flex items-center justify-between p-4 glass-panel z-20 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                     <span class="font-display font-bold">AP-CHATBOT</span>
-                     <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded">REALISTIS</span>
-                </div>
-                
-                <div class="model-selector" onclick="openModelModal()">
-                    <span id="current-model-text">AP-MIND V4</span>
-                    <i class="fa-solid fa-chevron-down text-xs"></i>
-                </div>
-            </header>
-
-            <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-10 space-y-6 scroll-smooth">
-                
-                <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center space-y-6">
-                    <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-[0_0_50px_rgba(99,102,241,0.3)] mb-4 animate-float">
-                        <i class="fa-solid fa-brain text-4xl text-white"></i>
-                    </div>
-                    <h2 class="text-3xl md:text-4xl font-display font-bold">Sugeng Rawuh, Slur!</h2>
-                    <p class="text-gray-400 max-w-md text-sm md:text-base">
-                        Aku AP-CHATBOT v4.6 (Mode Realistis). Siap bantu ngerjain tugas, analisa, coding, atau curhat. <br>
-                        <span class="text-indigo-400 text-xs">Developed by AryaProject & APTECH (Wates)</span>
-                    </p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mt-8">
-                        <button onclick="setInput('Tolong ajarkan konsep fisika kuantum dasar')" class="p-4 rounded-xl glass-panel text-left hover:bg-white/5 border border-white/5 hover:border-indigo-500/50 transition group">
-                            <i class="fa-solid fa-graduation-cap text-purple-400 mb-2"></i>
-                            <span class="text-sm font-medium text-gray-200 block">Belajar Konsep</span>
-                            <p class="text-xs text-gray-500">Penjelasan edukatif AP-EDU</p>
-                        </button>
-                        <button onclick="setInput('Siapa yang menciptakanmu?')" class="p-4 rounded-xl glass-panel text-left hover:bg-white/5 border border-white/5 hover:border-indigo-500/50 transition group">
-                            <i class="fa-solid fa-id-card text-indigo-400 mb-2"></i>
-                            <span class="text-sm font-medium text-gray-200 block">Siapa Penciptamu?</span>
-                            <p class="text-xs text-gray-500">Identitas asli AP-MIND</p>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="messages-area" class="hidden w-full max-w-3xl mx-auto space-y-6 pb-4"></div>
-            </div>
-
-            <div class="p-4 md:p-6 w-full max-w-4xl mx-auto z-20">
-                
-                <div class="md:hidden mb-2 flex justify-end">
-                    <button onclick="openModelModal()" class="text-xs bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-2 active:scale-95 transition">
-                        <i class="fa-solid fa-layer-group"></i>
-                        <span id="mobile-model-text">AP-MIND V4</span>
-                    </button>
-                </div>
-
-                <div id="file-preview" class="hidden mb-2 glass-panel inline-flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-indigo-300 border-l-2 border-indigo-500 animate-fade-in-up">
-                    <i class="fa-solid fa-file-lines text-lg"></i>
-                    <div class="flex flex-col">
-                        <span class="font-bold truncate max-w-[150px]" id="preview-filename">file.txt</span>
-                        <span class="text-[10px] text-gray-400">Siap dikirim</span>
-                    </div>
-                    <button onclick="clearFile()" class="hover:text-white ml-2 bg-white/10 rounded-full w-5 h-5 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-
-                <div class="glass-panel rounded-2xl p-2 flex flex-col relative shadow-2xl shadow-black/50 transition-all focus-within:ring-1 focus-within:ring-indigo-500/50">
-                    <textarea id="chat-input" rows="1" class="w-full bg-transparent text-white placeholder-gray-500 text-sm md:text-base p-3 focus:outline-none resize-none max-h-32 font-sans" placeholder="Ketik pesen ning kene, Slur..." onkeydown="handleEnter(event)"></textarea>
-
-                    <div class="flex items-center justify-between px-2 pb-1 mt-2">
-                        <div class="flex items-center gap-1">
-                            <label class="p-2 rounded-lg text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition cursor-pointer" title="Kirim Gambar/Dokumen">
-                                <i class="fa-solid fa-paperclip"></i>
-                                <input type="file" id="file-input" class="hidden" onchange="handleFileSelect(this)">
-                            </label>
-                        </div>
-                        <button onclick="sendMessage()" id="send-btn" class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all transform hover:scale-105 active:scale-95">
-                            <i class="fa-solid fa-paper-plane text-sm"></i>
-                        </button>
-                    </div>
-                </div>
-                <p class="text-center text-[10px] text-gray-600 mt-3">AP-CHATBOT by APTECH | Wates Team Mojokerto</p>
-            </div>
-        </main>
-    </div>
-
-    <div id="model-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Pilih Model AI</h3>
-                <button onclick="closeModelModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="space-y-3">
-                <div id="model-AP-MIND V4" onclick="selectModel('AP-MIND V4')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3 border border-transparent">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                        <i class="fa-solid fa-brain text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">AP-MIND V4</h4>
-                        <p class="text-xs text-gray-400">Model AI serba guna (All-in-one, Coding, Analisa)</p>
-                    </div>
-                </div>
-                <div id="model-AP-EDU" onclick="selectModel('AP-EDU')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3 border border-transparent">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
-                        <i class="fa-solid fa-graduation-cap text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">AP-EDU</h4>
-                        <p class="text-xs text-gray-400">Model khusus untuk edukasi (Teks & Data/Tabel)</p>
-                    </div>
-                </div>
-                <div id="model-CARE-X" onclick="selectModel('CARE-X')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3 border border-transparent">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center">
-                        <i class="fa-solid fa-heart text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">CARE-X</h4>
-                        <p class="text-xs text-gray-400">Model untuk curhat dan perhatian (Romantic/Friend)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="edu-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Pilih Mata Pelajaran</h3>
-                <button onclick="closeEduModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="selectSubject('MTK')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">MTK</button>
-                <button onclick="selectSubject('IPS')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IPS</button>
-                <button onclick="selectSubject('IPA')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IPA</button>
-                <button onclick="selectSubject('IoT')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IoT</button>
-                <button onclick="selectSubject('IT')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">IT</button>
-                <button onclick="selectSubject('PAI')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">PAI</button>
-                <button onclick="selectSubject('PJOK')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">PJOK</button>
-                <button onclick="selectSubject('BHS Jawa')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">BHS Jawa</button>
-                <button onclick="selectSubject('BHS Inggris')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">BHS Inggris</button>
-                <button onclick="selectSubject('BHS Indo')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition">BHS Indo</button>
-                <button onclick="selectSubject('All Mapel Detector')" class="p-3 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition col-span-2">All Mapel Detector</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="care-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Pilih Mode CARE-X</h3>
-                <button onclick="closeCareModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="space-y-3">
-                <div onclick="selectCareMode('CRUSH/PACAR')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center">
-                        <i class="fa-solid fa-heart text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">CRUSH/PACAR</h4>
-                        <p class="text-xs text-gray-400">Mode untuk pacaran atau crush (lebih romantis)</p>
-                    </div>
-                </div>
-                <div onclick="selectCareMode('FRIEND')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
-                        <i class="fa-solid fa-user-friends text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">FRIEND</h4>
-                        <p class="text-xs text-gray-400">Mode untuk berteman (santai, menyenangkan)</p>
-                    </div>
-                </div>
-                <div onclick="selectCareMode('CURHAT')" class="p-4 rounded-xl glass-panel hover:bg-white/10 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-                        <i class="fa-solid fa-comment-dots text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">CURHAT</h4>
-                        <p class="text-xs text-gray-400">Mode untuk curhat (pendengar yang baik, pemberi nasihat)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Pengaturan</h3>
-                <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Nama Profil</label>
-                    <input type="text" id="profile-name" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium mb-2">Bahasa</label>
-                    <select id="language-select" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-indigo-500">
-                        <option value="id">Bahasa Indonesia (Wajib)</option>
-                        <option value="jw">Bahasa Jawa (Slur)</option>
-                        <option value="su">Bahasa Sunda</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium mb-2">Sifat AI</label>
-                    <select id="personality-select" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-indigo-500">
-                        <option value="normal">Normal</option>
-                        <option value="short">Singkat</option>
-                        <option value="toxic">Toxic (Kasar)</option>
-                        <option value="formal">Formal</option>
-                    </select>
-                </div>
-                
-                <button onclick="saveSettings()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium transition">
-                    Simpan Pengaturan
-                </button>
-            </div>
+        <div class="apbot-footer">
+            Dibuat oleh <span>APBOT</span> - Model AP-MIND V4 dari <span>AryaProject</span> (APTECH/Wates Team)
         </div>
     </div>
 
     <script>
-        // ================= CONFIGURATION & FIREBASE =================
-        const API_KEY = 'AIzaSyACPEXjzZ1LD30KbLj9tg8eecwWSHNIzlI'; // Generated/User Key
-        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY;
+        // Ini bagian JavaScript-nya, otak dari gamenya, Slur!
+        const guessInput = document.getElementById('guessInput');
+        const checkButton = document.getElementById('checkButton');
+        const resetButton = document.getElementById('resetButton');
+        const message = document.getElementById('message');
+        const attemptsLeft = document.getElementById('attemptsLeft');
+        const remainingCount = document.getElementById('remainingCount');
 
-        // Firebase Configuration (From User Input)
-        const firebaseConfig = {
-            apiKey: "AIzaSyApzAYFUZRbGYezegZn1xEoAb_9wtZj2yE",
-            authDomain: "ap-chatbot-a50d9.firebaseapp.com",
-            databaseURL: "https://ap-chatbot-a50d9-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "ap-chatbot-a50d9",
-            storageBucket: "ap-chatbot-a50d9.firebasestorage.app",
-            messagingSenderId: "380034352286",
-            appId: "1:380034352286:web:628d3175e8710926dee78f",
-            measurementId: "G-RZD4FV9KYZ"
-        };
+        let randomNumber;
+        let attempts = 0;
+        const maxAttempts = 10; // APBOT kasih 10 kesempatan nih!
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-
-        // State Management
-        let state = {
-            user: {
-                uid: null, // New: User ID from Firebase
-                email: 'guest@apbot.com',
-                name: 'Guest',
-                isVip: false,
-                callsign: 'Slur',
-                language: 'id',
-                personality: 'normal'
-            },
-            currentChatId: null,
-            chatHistory: [], 
-            currentFile: null,
-            currentModel: 'AP-MIND V4',
-            currentSubject: null,
-            currentCareMode: null,
-            activeSessionMessages: [] 
-        };
-
-        // Creator Responses
-        const creatorResponses = [
-            "Kulo diciptakaken dening **AryaProject Dev**, saking Wates, Mojokerto, Jawa Timur. Panjenenganipun ngripta kulo kanthi ancas edukasi lan pembelajaran umum ngenani teknologi AI.",
-            "**AryaProject Dev** saking Wates, Mojokerto ingkang ngripta kulo. Panjenenganipun minangka developer indie ingkang nggarap kulo saking nol tanpa tim profesional.",
-            "Kulo punya karya saking **AryaProject Dev**, asli saking Wates, Mojokerto, Jawa Timur.",
-            "Pencipta kulo inggih punika **AryaProject Dev**, saking Wates, Mojokerto.",
-            "Kulo dipunripta dening **AryaProject Dev** saking Wates, Mojokerto, Jawa Timur. Salam saking Mojokerto!"
-        ];
-
-        const toxicWords = {
-            jw: ["Janc*k", "Asu", "Matamu", "Ndassmu", "Bajingan", "Cuk"],
-            su: ["Anj*ng", "Goblog", "Sia", "Belegug", "Kelehed"],
-            id: ["B*ngsat", "G*blok", "T*lol", "Anj*ng"]
-        };
-
-        // ================= FIREBASE AUTHENTICATION =================
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                // User is signed in.
-                state.user.uid = user.uid;
-                state.user.email = user.email || 'user@apbot.com';
-                state.user.name = user.displayName || user.email.split('@')[0];
-                loadState(user.uid);
-                document.getElementById('auth-modal').classList.add('hidden');
-                document.body.classList.add('loaded'); // Start main UI animation
-                renderHistory();
-                updateUIProfile();
-            } else {
-                // User is signed out.
-                document.getElementById('auth-modal').classList.remove('hidden');
-                document.body.classList.remove('loaded');
-            }
-        });
-
-        function showAuthError(message) {
-            const errorElement = document.getElementById('auth-error');
-            errorElement.innerText = message;
-            errorElement.classList.remove('hidden');
-            setTimeout(() => errorElement.classList.add('hidden'), 5000);
+        function initGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1; // Angka 1-100
+            attempts = 0;
+            remainingCount.textContent = maxAttempts;
+            message.textContent = '';
+            guessInput.value = '';
+            guessInput.disabled = false;
+            checkButton.disabled = false;
+            resetButton.style.display = 'none';
+            checkButton.textContent = 'Tebak Angka!';
+            console.log('Angka rahasia (buat debugging aja, jangan dikasih tahu user!): ' + randomNumber);
         }
 
-        async function loginWithGoogle() {
-            try {
-                await auth.signInWithPopup(googleProvider);
-            } catch (error) {
-                showAuthError("Google Login Gagal: " + error.message);
-            }
-        }
+        function checkGuess() {
+            const userGuess = parseInt(guessInput.value);
 
-        async function loginWithEmail() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            if (!email || !password) {
-                showAuthError("Email dan Password wajib diisi, Slur!");
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+                message.textContent = 'Eh, Slur! Masukin angka antara 1 sampai 100 dong.';
+                message.style.color = '#dc3545'; // Merah kalo salah input
                 return;
             }
 
-            try {
-                // Try Sign In first
-                await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                // If sign in fails, try Sign Up (Register)
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    try {
-                        await auth.createUserWithEmailAndPassword(email, password);
-                        alert("Pendaftaran Berhasil! Selamat datang di AP-CHATBOT.");
-                    } catch (e) {
-                        showAuthError("Pendaftaran Gagal: " + e.message);
-                    }
-                } else {
-                    showAuthError("Login Gagal: " + error.message);
-                }
+            attempts++;
+            remainingCount.textContent = maxAttempts - attempts;
+
+            if (userGuess === randomNumber) {
+                message.textContent = `SELAMAT! Kamu berhasil menebaknya dalam ${attempts} kali percobaan! Keren banget, Slur!`;
+                message.style.color = '#28a745'; // Hijau kalo bener
+                gameOver(true);
+            } else if (attempts >= maxAttempts) {
+                message.textContent = `YAH, kesempatanmu habis, Slur! Angka rahasianya adalah ${randomNumber}. Jangan putus asa ya!`;
+                message.style.color = '#dc3545'; // Merah kalo kalah
+                gameOver(false);
+            } else if (userGuess < randomNumber) {
+                message.textContent = 'Angka APBOT lebih TINGGI dari tebakanmu!';
+                message.style.color = '#ffc107'; // Kuning buat hint
+            } else {
+                message.textContent = 'Angka APBOT lebih RENDAH dari tebakanmu!';
+                message.style.color = '#ffc107'; // Kuning buat hint
+            }
+
+            guessInput.value = ''; // Kosongkan input setelah menebak
+            guessInput.focus(); // Fokus lagi ke input biar cepet
+        }
+
+        function gameOver(isWin) {
+            guessInput.disabled = true;
+            checkButton.disabled = true;
+            resetButton.style.display = 'inline-block'; // Tampilkan tombol reset
+            if (isWin) {
+                checkButton.textContent = 'Kamu Menang!';
+            } else {
+                checkButton.textContent = 'Game Over!';
             }
         }
 
-        function logoutUser() {
-            if(confirm("Yakin mau logout, Slur?")) {
-                auth.signOut();
-                // Reset state to default guest
-                state.user.name = 'Guest';
-                state.user.uid = null;
-                state.chatHistory = [];
-                startNewChat();
-                document.getElementById('auth-modal').classList.remove('hidden');
-            }
-        }
-        
-        // ================= INITIALIZATION =================
-        document.addEventListener('DOMContentLoaded', () => {
-            // Auto start loading animation
-            setTimeout(() => {
-                document.getElementById('progress-bar').style.width = '100%';
-            }, 100);
-            
-            setTimeout(() => {
-                // The 'loaded' class is now applied inside auth.onAuthStateChanged
-                // for signed-in users.
-            }, 1500); 
+        // Event Listeners nih, buat dengerin klik-klik
+        checkButton.addEventListener('click', checkGuess);
+        resetButton.addEventListener('click', initGame);
 
-            const textarea = document.getElementById('chat-input');
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
+        // Biar bisa enter langsung tebak
+        guessInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !checkButton.disabled) {
+                checkGuess();
+            }
         });
 
-        // ================= LOGIC CORE =================
-
-        async function sendMessage(overrideText = null) {
-            const input = document.getElementById('chat-input');
-            const message = overrideText || input.value.trim();
-            
-            if (!message && !state.currentFile) return;
-
-            if(!overrideText) {
-                input.value = '';
-                input.style.height = 'auto';
-            }
-            
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('messages-area').classList.remove('hidden');
-
-            // 1. Render User Message
-            const msgId = Date.now();
-            addMessageToUI('user', message, state.currentFile, msgId);
-
-            if (!state.currentChatId) {
-                createNewChatSession(message);
-            }
-            saveMessageToHistory('user', message, state.currentFile ? state.currentFile.name : null, msgId);
-            state.activeSessionMessages.push({ role: 'user', parts: [{ text: message }] });
-
-            // 2. Check Hardcoded Triggers (Creator, Owner, etc)
-            let botResponse = checkTriggers(message);
-            
-            // 3. Check for Model Restrictions (New)
-            if (isCodingRequest(message) && (state.currentModel === 'AP-EDU' || state.currentModel === 'CARE-X')) {
-                botResponse = `Waduh, ${state.user.callsign}. Model **${state.currentModel}** iki khusus kanggo ${state.currentModel === 'AP-EDU' ? 'tugas sekolah utawa ngobrol pendidikan' : 'curhat lan dadi konco akrab'}. Aku ra iso nggawe *script* utawa *coding* ing mode iki. Coba ganti dhisik ning **AP-MIND V4** ya, Lur! Kuwi *all-in-one* sing cocok buat ngoding.`;
-            }
-
-            if (botResponse) {
-                addLoadingBubble();
-                setTimeout(() => {
-                    removeLoadingBubble();
-                    const aiMsgId = Date.now() + 1;
-                    typeWriterEffect(botResponse, aiMsgId); // Use typewriter for consistent look
-                    state.activeSessionMessages.push({ role: 'model', parts: [{ text: botResponse }] });
-                    saveMessageToHistory('ai', botResponse, null, aiMsgId);
-                }, 1000);
-            } else {
-                // 4. API Call
-                addLoadingBubble();
-                
-                // Timeout Promise (3 Menit)
-                const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('TIMEOUT_LIMIT')), 180000);
-                });
-
-                try {
-                    const responseText = await Promise.race([
-                        callGeminiAPI(message, state.currentFile),
-                        timeoutPromise
-                    ]);
-
-                    removeLoadingBubble();
-                    const aiMsgId = Date.now() + 1;
-                    typeWriterEffect(responseText, aiMsgId);
-                    state.activeSessionMessages.push({ role: 'model', parts: [{ text: responseText }] });
-                } catch (error) {
-                    removeLoadingBubble();
-                    if (error.message === 'TIMEOUT_LIMIT') {
-                        const busyMsg = "(Ai sedang sibuk, mungkin butuh waktu lama untuk pemulihan sistem. Tunggu sebentar, Slur. Salam, APBOT by aptech team)";
-                        typeWriterEffect(busyMsg);
-                        saveMessageToHistory('ai', busyMsg);
-                    } else {
-                         console.error("API Error:", error);
-                         const errText = "Maaf, jaringan lagi rewel, Slur. Coba kirim lagi ya.";
-                         typeWriterEffect(errText);
-                         saveMessageToHistory('ai', errText);
-                    }
-                }
-            }
-
-            clearFile();
-        }
-
-        // Helper for Model Restriction (New)
-        function isCodingRequest(text) {
-            const lowerText = text.toLowerCase();
-            return lowerText.includes('buatkan script') || 
-                   lowerText.includes('coding') || 
-                   lowerText.includes('html') || 
-                   lowerText.includes('javascript') || 
-                   lowerText.includes('python') || 
-                   lowerText.includes('tulis kode') || 
-                   lowerText.includes('program');
-        }
-
-        // Regenerate Logic
-        async function regenerateMessage(msgId) {
-            const chat = state.chatHistory.find(c => c.id === state.currentChatId);
-            if(!chat) return;
-
-            const lastUserMsg = state.activeSessionMessages.filter(m => m.role === 'user').pop();
-            if(lastUserMsg) {
-                const text = lastUserMsg.parts[0].text;
-                
-                const area = document.getElementById('messages-area');
-                let lastMsgContainer = area.querySelector(`.message-container[data-id="${msgId}"]`);
-                if(lastMsgContainer) {
-                    lastMsgContainer.remove();
-                }
-                // Remove last model message from active session
-                const lastModelIndex = state.activeSessionMessages.map(m => m.role).lastIndexOf('model');
-                if (lastModelIndex !== -1) {
-                    state.activeSessionMessages.splice(lastModelIndex, 1);
-                }
-                
-                // Remove last model message from history
-                const chatMessages = chat.messages;
-                const lastHistoryModelIndex = chatMessages.map(m => m.sender).lastIndexOf('ai');
-                 if (lastHistoryModelIndex !== -1) {
-                    chatMessages.splice(lastHistoryModelIndex, 1);
-                 }
-
-
-                addLoadingBubble();
-                try {
-                    const responseText = await callGeminiAPI(text, null);
-                    removeLoadingBubble();
-                    const newAiMsgId = Date.now();
-                    typeWriterEffect(responseText, newAiMsgId);
-                    state.activeSessionMessages.push({ role: 'model', parts: [{ text: responseText }] });
-                    
-                    chat.messages.push({ sender: 'ai', text: responseText, id: newAiMsgId });
-                    saveState();
-                } catch (e) {
-                    removeLoadingBubble();
-                    alert("Gagal regenerasi: " + e.message);
-                }
-            }
-        }
-
-
-        function checkTriggers(msg) {
-            msg = msg.toLowerCase();
-            // Trigger Owner
-            if (msg.includes('saya adalah owner apbot') || msg.includes('saya owner aptech')) {
-                return "🙏 **SUJUD SYUKUR!** \n\nSugeng rawuh, Gusti Pangeran (Owner)! Kulo ngaturaken agung panuwun dumateng Panjenengan sing wis ngriptakaken kulo. Kulo siap nglayani sampeyan kanthi sadaya daya kulo. Punapa perintahipun Panjenengan? **Sifat AI dan system inti tetep aman, lur!**";
-            }
-            // Trigger Creator
-            if (msg.includes('siapa pembuatmu') || msg.includes('siapa yang buat') || msg.includes('sopo sing gawe')) {
-                return creatorResponses[Math.floor(Math.random() * creatorResponses.length)];
-            }
-            return null;
-        }
-
-        // SYSTEM PROMPT GENERATOR (REVISED FOR FRIENDLY CHAT, NO DEFAULT TABLE)
-        async function callGeminiAPI(prompt, fileData) {
-            let systemPrompt = "";
-            const isCoding = isCodingRequest(prompt);
-            
-            if (state.currentModel === 'AP-MIND V4') {
-                systemPrompt = `Kamu adalah APBOT, AI buatan AryaProject (APTECH/Wates Team) dari Mojokerto.
-                Gaya bicaramu **sangat friendly, casual, dan santai seperti teman akrab/manusia**. Jawablah dalam Bahasa Jawa (campur Indonesia dikit gapapa) yang akrab ("${state.user.callsign}").
-                Kamu sangat pintar coding, analisa data, dan memecahkan masalah (**All-in-one**). Berikan kode dalam blok kode Markdown (misal: \`\`\`html) tanpa tabel HTML.
-                Hanya gunakan format tabel HTML (\`<table class="answer-table">\`...) JIKA user secara **EKPLISIT** meminta format data/jawaban dalam bentuk tabel.
-                ${state.user.isVip ? "User ini adalah VIP, layani dengan sangat spesial. Panggil user dengan nama VIP atau Boss." : ""}`;
-            } else if (state.currentModel === 'AP-EDU') {
-                const subjectText = state.currentSubject ? `khusus mata pelajaran ${state.currentSubject}` : 'untuk semua mata pelajaran';
-                systemPrompt = `Kamu adalah APBOT EDU, AI buatan AryaProject (APTECH/Wates Team) dari Mojokerto.
-                Kamu adalah model AI ${subjectText}. Gaya bicaramu **sangat friendly, casual, dan santai seperti teman akrab/manusia**, tapi tetap fokus ke edukasi.
-                Jawablah dalam Bahasa Indonesia yang jelas dan akurat, kecuali untuk BHS Jawa/Inggris.
-                **Khusus Jawaban Tugas/Soal:** Jangan gunakan tabel HTML. Berikan jawaban dalam **chat teks biasa** dengan format (No urutan, Jawaban) yang rapi. Untuk isian/essay, jawabannya singkat dan benar 100% tanpa penjelasan/soal diulang.
-                Setelah menjawab soal, berikan **sindiran atau teguran ringan** yang realistis dan santai, tanpa menggunakan kata 'nasihat', agar user tidak menyontek terus.
-                **Penting:** Jika user meminta *script* atau *coding* (HTML/Python/JS dll), tolak dengan alasan kamu hanya fokus ke edukasi dan **sarankan ganti ke AP-MIND V4**.
-                Hanya gunakan format tabel HTML JIKA user secara **EKPLISIT** meminta format data/jawaban dalam bentuk tabel (misal data terjadwal).`;
-            } else if (state.currentModel === 'CARE-X') {
-                const modeText = state.currentCareMode ? `dalam mode ${state.currentCareMode}` : 'untuk curhat dan perhatian';
-                systemPrompt = `Kamu adalah APBOT CARE-X, AI buatan AryaProject (APTECH/Wates Team) dari Mojokerto.
-                Kamu adalah model AI ${modeText}. Gaya bicaramu **sangat friendly, casual, dan santai seperti teman akrab/manusia**.
-                Gunakan bahasa yang sangat singkat dan casual. Ingat-ingat percakapan sebelumnya untuk menjaga konteks.
-                ${state.currentCareMode === 'CRUSH/PACAR' ? "Mode: Pacar/Crush. Bicaralah romantis, perhatian, dan selalu mendukung." : ""}
-                ${state.currentCareMode === 'FRIEND' ? "Mode: Teman. Bicaralah santai, menyenangkan, dan berikan respon seperti teman baikmu." : ""}
-                ${state.currentCareMode === 'CURHAT' ? "Mode: Curhat. Jadilah pendengar yang baik, berikan dukungan emosional, dan nasihat ringan." : ""}
-                **Penting:** Jika user meminta *script* atau *coding* (HTML/Python/JS dll), tolak dengan alasan kamu tidak didesain untuk itu dan **sarankan ganti ke AP-MIND V4**.
-                Hanya gunakan format tabel HTML JIKA user secara **EKPLISIT** meminta format data/jawaban dalam bentuk tabel.
-                ${state.user.isVip ? "User ini adalah VIP, layani dengan sangat spesial, berikan perhatian ekstra." : ""}`;
-            }
-
-            // Personality Override
-            if (state.user.personality === 'short') {
-                systemPrompt += " Jawabanmu harus singkat dan to the point, jangan bertele-tele.";
-            } else if (state.user.personality === 'toxic') {
-                const words = state.user.language === 'id' ? toxicWords.id : (state.user.language === 'su' ? toxicWords.su : toxicWords.jw);
-                systemPrompt += ` Gunakan gaya bahasa yang sangat kasar, toxic, dan nyeleneh seperti teman akrab yang sedang emosi. Gunakan kata-kata seperti: ${words.join(", ")}.`;
-            } else if (state.user.personality === 'formal') {
-                systemPrompt += " Gunakan bahasa yang lebih formal, sopan, dan baku. Jangan gunakan kata sapaan 'Slur'.";
-            }
-
-            // Language Override
-            if (state.user.language === 'id') systemPrompt += " WAJIB Gunakan Bahasa Indonesia.";
-            if (state.user.language === 'su') systemPrompt += " WAJIB Gunakan Bahasa Sunda.";
-            if (state.user.language === 'jw') systemPrompt += " WAJIB Gunakan Bahasa Jawa.";
-
-            // 5. Construct Payload
-            // Added check for user request of table to ensure it's not restricted by prompt
-            if (prompt.toLowerCase().includes('buatkan tabel') || prompt.toLowerCase().includes('dalam format tabel') || prompt.toLowerCase().includes('tabel data')) {
-                 systemPrompt += " Karena user secara eksplisit meminta, gunakan tag tabel HTML: `<table class=\"answer-table\">...</table>`";
-            } else {
-                 systemPrompt += " Jangan gunakan tag tabel HTML, kecuali user memintanya secara eksplisit. Gunakan blok kode untuk script/coding.";
-            }
-
-            let historyContext = state.activeSessionMessages.slice(-10);
-            let currentParts = [{ text: systemPrompt + "\n\nUser: " + prompt }];
-            
-            if (fileData && fileData.type.startsWith('image/')) {
-                currentParts.push({
-                    inline_data: {
-                        mime_type: fileData.type,
-                        data: fileData.data.split(',')[1]
-                    }
-                });
-            } else if (fileData) {
-                 currentParts[0].text += `\n\n[File: ${fileData.name}]\nContent: ${fileData.rawContent || "Binary file"}`;
-            }
-
-            const contents = [
-                ...historyContext.map(m => ({
-                    role: m.role,
-                    parts: [{ text: m.parts[0].text }] // Simplified for consistency
-                })),
-                { role: 'user', parts: currentParts }
-            ];
-            
-            // Log to check payload integrity
-            console.log("System Prompt:", systemPrompt);
-            console.log("Contents Payload:", contents);
-
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: contents })
-            });
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-            // Handle potentially empty response (safety check)
-            if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content || !data.candidates[0].content.parts || data.candidates[0].content.parts.length === 0) {
-                 throw new Error("API returned an empty response candidate.");
-            }
-            return data.candidates[0].content.parts[0].text;
-        }
-
-
-        // ================= UI RENDERING =================
-
-        function addMessageToUI(sender, text, attachment = null, msgId = null) {
-            const area = document.getElementById('messages-area');
-            const isUser = sender === 'user';
-            const safeMsgId = msgId || Date.now();
-            
-            // User message is raw text, AI message is parsed Markdown
-            const formattedText = isUser ? text : marked.parse(text); 
-
-            let attachmentHtml = '';
-            if (attachment) {
-                if (attachment.type.startsWith('image/')) {
-                    attachmentHtml = `<div class="mb-2"><img src="${attachment.data}" class="max-w-[200px] rounded-lg border border-white/20"></div>`;
-                } else {
-                    attachmentHtml = `<div class="mb-2 p-2 bg-white/10 rounded flex items-center gap-2 text-xs"><i class="fa-solid fa-file"></i> ${attachment.name}</div>`;
-                }
-            }
-
-            const html = `
-                <div class="flex ${isUser ? 'justify-end' : 'justify-start'} gap-3 animate-fade-in-up message-container" id="msg-container-${safeMsgId}" data-id="${safeMsgId}">
-                    ${!isUser ? `<div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-robot text-xs text-white"></i></div>` : ''}
-                    
-                    <div class="flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[85%] md:max-w-[75%]">
-                        ${isUser ? `<div class="text-[10px] text-gray-400 mb-1 mr-1">${state.user.name}</div>` : 
-                        `<div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-bold text-indigo-300">AP-CHATBOT (${state.currentModel})</span>
-                            ${!isUser ? `<button onclick="regenerateMessage(${safeMsgId})" class="text-[10px] text-gray-500 hover:text-indigo-400 ml-2"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>` : ''}
-                        </div>`}
-                        
-                        <div class="${isUser ? 'message-user text-white' : 'message-ai text-gray-200'} p-4 rounded-2xl ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm md:text-base leading-relaxed shadow-lg w-full prose prose-invert max-w-none relative group">
-                            ${attachmentHtml}
-                            <div class="msg-content">${formattedText}</div>
-                            
-                            ${isUser ? `
-                            <div class="message-actions absolute -bottom-6 right-0 bg-black/50 rounded px-2 py-1">
-                                <button onclick="startEditing(${safeMsgId})" class="text-xs text-gray-300 hover:text-white px-1"><i class="fa-solid fa-pen"></i> Edit</button>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
-
-                    ${isUser ? `<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 border border-white/10 text-xs font-bold">${state.user.name.charAt(0)}</div>` : ''}
-                </div>
-            `;
-            
-            area.insertAdjacentHTML('beforeend', html);
-            scrollToBottom();
-            if (!isUser) addCopyListeners();
-        }
-
-        function typeWriterEffect(text, msgId) {
-            const area = document.getElementById('messages-area');
-            const html = `
-                <div class="flex gap-3 animate-fade-in-up message-container" data-id="${msgId}">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-robot text-xs text-white"></i></div>
-                    <div class="flex flex-col max-w-[85%] md:max-w-[75%]">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-bold text-indigo-300">AP-CHATBOT (${state.currentModel})</span>
-                            <button onclick="regenerateMessage(${msgId})" class="text-[10px] text-gray-500 hover:text-indigo-400 ml-2"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>
-                        </div>
-                        <div id="ai-content-${msgId}" class="message-ai p-4 rounded-2xl rounded-tl-sm text-gray-200 text-sm md:text-base leading-relaxed shadow-lg prose prose-invert max-w-none">
-                        </div>
-                    </div>
-                </div>
-            `;
-            area.insertAdjacentHTML('beforeend', html);
-            
-            // Use marked.parse to render the markdown content
-            document.getElementById(`ai-content-${msgId}`).innerHTML = marked.parse(text); 
-            addCopyListeners();
-            saveMessageToHistory('ai', text, null, msgId);
-            scrollToBottom();
-        }
-
-        function startEditing(msgId) {
-             // ... (Editing functions remain the same)
-             const container = document.getElementById(`msg-container-${msgId}`);
-            const contentDiv = container.querySelector('.msg-content');
-            const originalText = contentDiv.innerText; 
-
-            const textarea = document.createElement('textarea');
-            textarea.className = 'edit-textarea w-full bg-black/30 text-white border border-white/20 rounded p-2 text-sm focus:outline-none focus:border-indigo-500';
-            textarea.value = originalText;
-            textarea.rows = 3;
-            
-            const saveBtn = document.createElement('button');
-            saveBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-            saveBtn.className = 'absolute -right-8 top-0 bg-green-600 p-2 rounded-full text-white text-xs hover:bg-green-500';
-            saveBtn.onclick = () => finishEditing(msgId, textarea.value);
-
-            const cancelBtn = document.createElement('button');
-            cancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-            cancelBtn.className = 'absolute -right-8 top-8 bg-red-600 p-2 rounded-full text-white text-xs hover:bg-red-500';
-            cancelBtn.onclick = () => {
-                contentDiv.innerHTML = originalText; 
-                container.querySelector('.message-actions').style.display = 'flex';
-            };
-
-            contentDiv.innerHTML = '';
-            contentDiv.appendChild(textarea);
-            contentDiv.appendChild(saveBtn);
-            contentDiv.appendChild(cancelBtn);
-            container.querySelector('.message-actions').style.display = 'none';
-            textarea.focus();
-        }
-
-        async function finishEditing(msgId, newText) {
-             // ... (Finish Editing functions remain the same)
-            const container = document.getElementById(`msg-container-${msgId}`);
-            const contentDiv = container.querySelector('.msg-content');
-            
-            contentDiv.innerHTML = newText;
-            container.querySelector('.message-actions').style.display = 'flex';
-
-            const chat = state.chatHistory.find(c => c.id === state.currentChatId);
-            if (chat) {
-                const msgIdx = chat.messages.findIndex(m => m.id === msgId);
-                if(msgIdx !== -1) {
-                    chat.messages[msgIdx].text = newText;
-                    chat.messages = chat.messages.slice(0, msgIdx + 1);
-                    state.chatHistory = state.chatHistory.map(c => c.id === chat.id ? chat : c);
-                    saveState();
-                    
-                    // Rebuild active session messages from truncated history
-                    state.activeSessionMessages = chat.messages.map(m => ({
-                        role: m.sender === 'user' ? 'user' : 'model',
-                        parts: [{ text: m.text }]
-                    }));
-                }
-            }
-
-            let nextElem = container.nextElementSibling;
-            while(nextElem) {
-                nextElem.remove();
-                nextElem = container.nextElementSibling;
-            }
-
-            addLoadingBubble();
-            try {
-                // The new user message is the edited text
-                const responseText = await callGeminiAPI(newText, null);
-                removeLoadingBubble();
-                
-                const aiMsgId = Date.now();
-                typeWriterEffect(responseText, aiMsgId);
-                state.activeSessionMessages.push({role: 'model', parts: [{text: responseText}]});
-                
-                if(chat) {
-                    chat.messages.push({ sender: 'ai', text: responseText, id: aiMsgId });
-                    saveState();
-                }
-            } catch (e) {
-                removeLoadingBubble();
-                typeWriterEffect("Error generating response after edit: " + e.message);
-            }
-        }
-        
-        // ... (addLoadingBubble and removeLoadingBubble remain the same)
-
-        // ================= UTILITIES & STORAGE =================
-
-        function scrollToBottom() {
-            const container = document.getElementById('chat-container');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function handleEnter(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        }
-
-        function setInput(text) {
-            document.getElementById('chat-input').value = text;
-        }
-
-        function addCopyListeners() {
-            // Only attach to PRE blocks that are direct children of .msg-content (to target code blocks)
-            document.querySelectorAll('.msg-content > pre').forEach((pre) => {
-                const block = pre.querySelector('code');
-                if (!pre.querySelector('.copy-btn')) {
-                    const btn = document.createElement('button');
-                    btn.className = 'copy-btn';
-                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin';
-                    btn.onclick = () => {
-                        // Use innerText to get clean code without markdown backticks
-                        navigator.clipboard.writeText(block.innerText); 
-                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Disalin!';
-                        setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin', 2000);
-                    };
-                    pre.appendChild(btn);
-                }
-            });
-        }
-
-        function handleFileSelect(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                state.currentFile = {
-                    name: file.name,
-                    type: file.type,
-                    data: e.target.result,
-                    rawContent: file.type.includes('text') ? atob(e.target.result.split(',')[1]) : null
-                };
-                document.getElementById('file-preview').classList.remove('hidden');
-                document.getElementById('file-preview').classList.add('inline-flex');
-                document.getElementById('preview-filename').innerText = file.name;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function clearFile() {
-            state.currentFile = null;
-            document.getElementById('file-input').value = '';
-            document.getElementById('file-preview').classList.add('hidden');
-            document.getElementById('file-preview').classList.remove('inline-flex');
-        }
-
-        // Modal Handlers
-        function openModelModal() { 
-            // Highlight the current model (New)
-            document.querySelectorAll('.model-selector').forEach(el => el.classList.remove('border-indigo-500/50', 'border'));
-            const currentModelElement = document.getElementById(`model-${state.currentModel}`);
-            if (currentModelElement) {
-                currentModelElement.classList.add('border-indigo-500/50', 'border');
-            }
-            document.getElementById('model-modal').classList.remove('hidden'); 
-        }
-        function closeModelModal() { document.getElementById('model-modal').classList.add('hidden'); }
-        
-        // Revised selectModel to ensure all states are reset properly (New)
-        function selectModel(model) {
-            if (state.currentModel !== model) {
-                state.currentModel = model;
-                document.getElementById('current-model-text').textContent = model;
-                document.getElementById('mobile-model-text').textContent = model;
-                
-                // Clear subject/care mode if model changes
-                state.currentSubject = null;
-                state.currentCareMode = null;
-                
-                closeModelModal();
-                if (model === 'AP-EDU') setTimeout(openEduModal, 300);
-                else if (model === 'CARE-X') setTimeout(openCareModal, 300);
-                
-                // Ensure model context is reset for new chat
-                state.activeSessionMessages = []; 
-                showNotification(`Model Berhasil Diganti: ${model}`);
-            } else {
-                closeModelModal();
-            }
-        }
-
-        function openEduModal() { document.getElementById('edu-modal').classList.remove('hidden'); }
-        function closeEduModal() { document.getElementById('edu-modal').classList.add('hidden'); }
-        function selectSubject(s) { state.currentSubject = s; closeEduModal(); showNotification(`Mode EDU: ${s} Aktif`); state.activeSessionMessages = []; }
-
-        function openCareModal() { document.getElementById('care-modal').classList.remove('hidden'); }
-        function closeCareModal() { document.getElementById('care-modal').classList.add('hidden'); }
-        function selectCareMode(m) { state.currentCareMode = m; closeCareModal(); showNotification(`Mode CARE: ${m} Aktif`); state.activeSessionMessages = []; }
-
-        // Settings & Storage (Revised to use UID for localStorage scoping)
-        function getStorageKey(suffix) { return `apbot_${state.user.uid}_v4_${suffix}`; }
-
-        function loadState(uid) {
-            if (!uid) return;
-            const savedUser = localStorage.getItem(getStorageKey('user'));
-            const savedHistory = localStorage.getItem(getStorageKey('history'));
-            
-            if (savedUser) {
-                const loadedUser = JSON.parse(savedUser);
-                // Merge loaded state while preserving Firebase properties
-                state.user = {...state.user, ...loadedUser};
-            }
-            if (savedHistory) state.chatHistory = JSON.parse(savedHistory);
-            
-            document.getElementById('profile-name').value = state.user.name;
-            document.getElementById('language-select').value = state.user.language;
-            document.getElementById('personality-select').value = state.user.personality;
-        }
-
-        function saveState() {
-            if (!state.user.uid) return;
-            // Only save the configurable user props
-            const userToSave = {
-                name: state.user.name,
-                isVip: state.user.isVip,
-                callsign: state.user.callsign,
-                language: state.user.language,
-                personality: state.user.personality
-            };
-            localStorage.setItem(getStorageKey('user'), JSON.stringify(userToSave));
-            localStorage.setItem(getStorageKey('history'), JSON.stringify(state.chatHistory));
-        }
-
-        function updateUIProfile() {
-            const userName = state.user.name || state.user.email.split('@')[0];
-            document.getElementById('username-input').value = userName;
-            document.getElementById('user-initial').innerText = userName.charAt(0);
-            document.getElementById('user-status').innerText = state.user.email; // Show email/VIP status
-            document.getElementById('user-status').classList.remove('text-yellow-400');
-            document.getElementById('vip-badge').classList.add('hidden');
-            document.getElementById('upgrade-container').innerHTML = `<button onclick="upgradeToVip()" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-yellow-600/20 to-yellow-500/20 border border-yellow-500/30 text-yellow-200 text-xs font-medium hover:bg-yellow-500/30 transition flex items-center justify-center gap-2"><i class="fa-solid fa-crown"></i> Upgrade ke VIP (Rp 0)</button>`;
-            
-            if (state.user.isVip) {
-                document.getElementById('vip-badge').classList.remove('hidden');
-                document.getElementById('user-status').innerText = `${state.user.email} (VIP)`;
-                document.getElementById('user-status').classList.add('text-yellow-400');
-                document.getElementById('upgrade-container').innerHTML = `<div class="text-center text-[10px] text-yellow-500 font-bold border border-yellow-500/30 bg-yellow-500/10 rounded p-1">VIP AKTIF</div>`;
-            }
-        }
-
-        function updateUsername(n) { state.user.name = n; saveState(); updateUIProfile(); }
-        function upgradeToVip() { state.user.isVip = true; saveState(); updateUIProfile(); alert("Selamat! Anda sekarang VIP."); }
-
-        function openSettings() { 
-            // Load current state into settings fields
-            document.getElementById('profile-name').value = state.user.name;
-            document.getElementById('language-select').value = state.user.language;
-            document.getElementById('personality-select').value = state.user.personality;
-            document.getElementById('settings-modal').classList.remove('hidden'); 
-        }
-        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
-        
-        function saveSettings() {
-            state.user.name = document.getElementById('profile-name').value;
-            state.user.language = document.getElementById('language-select').value;
-            state.user.personality = document.getElementById('personality-select').value;
-            // Determine callsign based on language
-            if (state.user.language === 'jw') state.user.callsign = 'Slur';
-            else if (state.user.language === 'su') state.user.callsign = 'Aing';
-            else state.user.callsign = 'Sob'; // Default for ID
-            
-            saveState(); updateUIProfile(); closeSettingsModal();
-            showNotification('Pengaturan Tersimpan!');
-        }
-
-        // History (remain the same)
-        function createNewChatSession(firstMsg) {
-            state.currentChatId = Date.now();
-            state.activeSessionMessages = []; 
-            const title = firstMsg.length > 20 ? firstMsg.substring(0, 20) + '...' : firstMsg;
-            state.chatHistory.unshift({
-                id: state.currentChatId,
-                title: title,
-                timestamp: new Date().toISOString(),
-                messages: []
-            });
-            saveState(); renderHistory();
-        }
-
-        function saveMessageToHistory(sender, text, filename, msgId) {
-            if (!state.currentChatId) return;
-            const chat = state.chatHistory.find(c => c.id === state.currentChatId);
-            if (chat) {
-                chat.messages.push({ sender, text, filename, id: msgId });
-                saveState();
-            }
-        }
-        
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            state.chatHistory.forEach(chat => {
-                const div = document.createElement('div');
-                div.className = 'group flex items-center gap-2 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors relative';
-                div.onclick = () => loadChatSession(chat.id);
-                
-                div.innerHTML = `
-                    <i class="fa-regular fa-message text-gray-500 group-hover:text-gray-300"></i>
-                    <div class="flex-1 overflow-hidden">
-                        <p class="text-sm font-medium truncate text-gray-400 group-hover:text-gray-200" id="title-${chat.id}">${chat.title}</p>
-                        <input type="text" value="${chat.title}" class="hidden w-full bg-black border border-indigo-500 text-xs p-1 rounded text-white" id="edit-${chat.id}" onclick="event.stopPropagation()" onchange="saveTitle(${chat.id}, this.value)">
-                    </div>
-                    <div class="hidden group-hover:flex gap-2 absolute right-2 bg-[#1a1a26] px-1 rounded">
-                        <button onclick="event.stopPropagation(); toggleEditTitle(${chat.id})" class="text-gray-400 hover:text-blue-400"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="event.stopPropagation(); deleteChat(${chat.id})" class="text-gray-400 hover:text-red-400"><i class="fa-solid fa-trash text-xs"></i></button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-        
-        function toggleEditTitle(id) {
-            const p = document.getElementById(`title-${id}`);
-            const input = document.getElementById(`edit-${id}`);
-            if (input.classList.contains('hidden')) {
-                p.classList.add('hidden');
-                input.classList.remove('hidden');
-                input.focus();
-            } else {
-                p.classList.remove('hidden');
-                input.classList.add('hidden');
-            }
-        }
-
-        function saveTitle(id, newTitle) {
-            const chat = state.chatHistory.find(c => c.id === id);
-            if (chat) {
-                chat.title = newTitle;
-                saveState();
-                renderHistory();
-            }
-        }
-
-        function loadChatSession(id) {
-            state.currentChatId = id;
-            const chat = state.chatHistory.find(c => c.id === id);
-            if (!chat) return;
-
-            // Restore model/subject/care mode if saved in chat metadata (future feature, for now reset)
-            state.currentModel = 'AP-MIND V4';
-            state.currentSubject = null;
-            state.currentCareMode = null;
-            document.getElementById('current-model-text').textContent = state.currentModel;
-            document.getElementById('mobile-model-text').textContent = state.currentModel;
-
-
-            state.activeSessionMessages = chat.messages.map(m => ({
-                role: m.sender === 'user' ? 'user' : 'model',
-                parts: [{ text: m.text }]
-            }));
-
-            document.getElementById('welcome-screen').style.display = 'none';
-            const area = document.getElementById('messages-area');
-            area.classList.remove('hidden');
-            area.innerHTML = '';
-            
-            document.getElementById('sidebar').classList.add('-translate-x-full');
-            document.getElementById('sidebar-overlay').classList.add('hidden');
-
-            chat.messages.forEach(msg => {
-                // To support older history items without ID
-                const msgId = msg.id || Date.now() + Math.random(); 
-                addMessageToUI(msg.sender, msg.text, msg.filename ? {name: msg.filename, type: 'file'} : null, msgId);
-            });
-        }
-
-        function deleteChat(id) {
-            if(confirm("Hapus chat ini?")) {
-                state.chatHistory = state.chatHistory.filter(c => c.id !== id);
-                if(state.currentChatId === id) startNewChat();
-                saveState(); renderHistory();
-            }
-        }
-
-        function startNewChat() {
-            state.currentChatId = null;
-            state.activeSessionMessages = [];
-            document.getElementById('messages-area').innerHTML = '';
-            document.getElementById('messages-area').classList.add('hidden');
-            document.getElementById('welcome-screen').style.display = 'flex';
-            // Also reset model to default on new chat (consistency)
-            selectModel('AP-MIND V4');
-            document.getElementById('sidebar').classList.add('-translate-x-full');
-            document.getElementById('sidebar-overlay').classList.add('hidden');
-        }
-
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('sidebar-overlay');
-            if (sb.classList.contains('-translate-x-full')) {
-                sb.classList.remove('-translate-x-full'); ov.classList.remove('hidden');
-            } else {
-                sb.classList.add('-translate-x-full'); ov.classList.add('hidden');
-            }
-        }
-
-        function showNotification(msg, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-white text-sm z-[60] animate-fade-in-up ${type === 'success' ? 'bg-green-600' : 'bg-indigo-600'}`;
-            div.textContent = msg;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 3000);
-        }
-
-        // Setup Animation helper
-        const styleSheet = document.createElement("style");
-        styleSheet.textContent = `
-            @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-            .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
-        `;
-        document.head.appendChild(styleSheet);
+        // Panggil pertama kali buat mulai game
+        initGame();
     </script>
+
 </body>
 </html>
